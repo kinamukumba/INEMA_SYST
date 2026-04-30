@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA Central - Gestão de Ocorrências</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    
+    <style>
+        .table-card {
+            padding: 3rem;
+            border-radius: 1.5rem;
+        }
+
+        .table-card h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #232c5f;
+            margin-bottom: 2.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #8c909c;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        td {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .user-cell h4 { font-size: 0.95rem; font-weight: 800; color: #232c5f; margin-bottom: 0.25rem; }
+        .user-cell p { font-size: 0.75rem; color: #8c909c; font-weight: 600; }
+
+        .date-cell { font-size: 0.85rem; font-weight: 600; color: #232c5f; }
+
+        .cat-cell { font-size: 0.85rem; font-weight: 800; }
+        .cat-red { color: #ef4444; }
+        .cat-blue { color: #3b82f6; }
+
+        .loc-cell h5 { font-size: 0.85rem; font-weight: 700; color: #232c5f; margin-bottom: 0.2rem; }
+        .loc-cell p { font-size: 0.75rem; color: #8c909c; }
+
+        .base-cell { font-size: 0.85rem; font-weight: 800; color: #232c5f; }
+        .no-base { color: #8c909c; font-weight: 500; }
+
+        .status-badge {
+            background-color: #fffbeb;
+            color: #d97706;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-select {
+            display: block;
+            width: 100%;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #232c5f;
+            background-color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2.5rem;
+        }
+
+        .page-btn {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #232c5f;
+            cursor: pointer;
+        }
+
+        .page-btn.active {
+            background-color: #232c5f;
+            color: white;
+            border-color: #232c5f;
+        }
+
+        .page-text { font-size: 0.8rem; font-weight: 600; color: #8c909c; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar admin-sidebar">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-satellite-dish" style="color: #ebb924;"></i>
+                <span>INEMA Central</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fa-solid fa-tower-broadcast"></i> Triagem
+                </a>
+                <a href="ocorrencias.html" class="nav-link active">
+                    <i class="fa-solid fa-list-ul"></i> Ocorrências
+                </a>
+                <a href="estatisticas.html" class="nav-link">
+                    <i class="fa-solid fa-chart-pie"></i> Estatísticas
+                </a>
+                <a href="registar_base.html" class="nav-link">
+                    <i class="fa-solid fa-building-circle-plus"></i> Registar Base
+                </a>
+                <a href="gestao_bases.html" class="nav-link">
+                    <i class="fa-solid fa-city"></i> Gestão de Bases
+                </a>
+                
+                <a href="index.html" class="nav-link logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 style="font-size: 1.1rem; font-weight: 800; color: #232c5f;">Gestão de Ocorrências</h2>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;">Admin Moisés</p>
+                        <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c; text-transform: uppercase;">Administrador</p>
+                    </div>
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #8c909c;"><i class="fa-solid fa-user"></i></div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <div class="card table-card">
+                    <h3>Todas Ocorrências</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Utente / ID</th>
+                                <th>Data Alerta</th>
+                                <th>Categoria</th>
+                                <th>Localização</th>
+                                <th>Base Atribuída</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="user-cell">
+                                    <h4>Kina Mukumba</h4>
+                                    <p>ID: #3 • +244928775029</p>
+                                </td>
+                                <td class="date-cell">19/04/26, 17:16</td>
+                                <td class="cat-cell cat-red">Acidente de Viação</td>
+                                <td class="loc-cell">
+                                    <h5>Simulado na View</h5>
+                                    <p>Palanca</p>
+                                </td>
+                                <td class="base-cell">Popula</td>
+                                <td>
+                                    <span class="status-badge">DESPACHADO</span>
+                                    <select class="status-select">
+                                        <option>Despachado</option>
+                                        <option>Concluído</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="user-cell">
+                                    <h4>Kina Mukumba</h4>
+                                    <p>ID: #2 • +244928775029</p>
+                                </td>
+                                <td class="date-cell">19/04/26, 16:37</td>
+                                <td class="cat-cell cat-blue">Afogamento</td>
+                                <td class="loc-cell">
+                                    <h5>Simulado na View</h5>
+                                    <p>Maianga</p>
+                                </td>
+                                <td class="base-cell no-base">Não Alocada</td>
+                                <td>
+                                    <span class="status-badge">DESPACHADO</span>
+                                    <select class="status-select">
+                                        <option>Despachado</option>
+                                        <option>Pendente</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="user-cell">
+                                    <h4>Kina Mukumba</h4>
+                                    <p>ID: #1 • +244928775029</p>
+                                </td>
+                                <td class="date-cell">19/04/26, 15:40</td>
+                                <td class="cat-cell cat-red">Dores no Peito / Coração</td>
+                                <td class="loc-cell">
+                                    <h5>Simulado na View</h5>
+                                    <p>Luanda</p>
+                                </td>
+                                <td class="base-cell no-base">Não Alocada</td>
+                                <td>
+                                    <span class="status-badge">DESPACHADO</span>
+                                    <select class="status-select">
+                                        <option>Despachado</option>
+                                        <option>Cancelado</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="pagination">
+                        <span class="page-text">Mostrando 3 de 132 ocorrências</span>
+                        <div style="display: flex; gap: 0.5rem; margin-left: 2rem;">
+                            <button class="page-btn">Anterior</button>
+                            <button class="page-btn active">1</button>
+                            <button class="page-btn">2</button>
+                            <button class="page-btn">Próxima</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

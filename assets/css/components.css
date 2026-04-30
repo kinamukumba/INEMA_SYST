@@ -1,0 +1,111 @@
+/* Componentes Reutilizáveis */
+
+/* Botões */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: var(--transition);
+    gap: 12px;
+}
+
+.btn-primary {
+    background-color: var(--primary-yellow);
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-yellow-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-entrar {
+    background-color: var(--primary-yellow);
+    padding: 8px 24px;
+    border-radius: 20px;
+    text-transform: capitalize;
+    font-size: 15px;
+}
+
+.btn-secondary {
+    background-color: var(--primary-blue);
+    color: var(--text-light);
+}
+
+.btn-secondary:hover {
+    background-color: var(--secondary-blue);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+.btn-rounded-full {
+    border-radius: 50px;
+}
+
+/* Ícones circulares nos botões */
+.icon-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+.icon-circle.dark-icon {
+    background-color: var(--primary-blue);
+    color: var(--primary-yellow);
+}
+.icon-circle.yellow-icon {
+    background-color: var(--primary-yellow);
+    color: var(--primary-blue);
+}
+
+/* Tipografia */
+.fw-bold { font-weight: 700; }
+.fw-normal { font-weight: 400; }
+
+.section-title {
+    font-size: 32px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.text-yellow { color: var(--primary-yellow); }
+.text-blue { color: var(--primary-blue); }
+.text-white { color: var(--text-light); }
+.text-center { text-align: center; }
+
+.mb-10 { margin-bottom: 10px; }
+.mb-20 { margin-bottom: 20px; }
+.mt-20 { margin-top: 20px; }
+
+.container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Cartões */
+.card {
+    background: var(--bg-white);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}

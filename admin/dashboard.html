@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA Central - Triagem</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    
+    <style>
+        .triage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .triage-card {
+            border-left: 6px solid #ef4444;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .triage-card.approved { border-left-color: #10b981; }
+
+        .occ-id {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #8c909c;
+        }
+
+        .occ-type {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #232c5f;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .occ-meta {
+            font-size: 0.85rem;
+            color: #8c909c;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .occ-meta span i { width: 18px; color: #232c5f; }
+
+        .action-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-approve {
+            flex: 2;
+            background-color: #232c5f;
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-reject {
+            flex: 1;
+            background-color: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #fee2e2;
+            padding: 0.8rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-approve:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar admin-sidebar">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-satellite-dish" style="color: #ebb924;"></i>
+                <span>INEMA Central</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link active">
+                    <i class="fa-solid fa-tower-broadcast"></i> Triagem
+                </a>
+                <a href="ocorrencias.html" class="nav-link">
+                    <i class="fa-solid fa-list-ul"></i> Ocorrências
+                </a>
+                <a href="estatisticas.html" class="nav-link">
+                    <i class="fa-solid fa-chart-pie"></i> Estatísticas
+                </a>
+                <a href="registar_base.html" class="nav-link">
+                    <i class="fa-solid fa-building-circle-plus"></i> Registar Base
+                </a>
+                <a href="gestao_bases.html" class="nav-link">
+                    <i class="fa-solid fa-city"></i> Gestão de Bases
+                </a>
+                
+                <a href="index.html" class="nav-link logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 style="font-size: 1.1rem; font-weight: 800; color: #232c5f;">Triagem de Emergências</h2>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;">Admin Moisés</p>
+                        <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c; text-transform: uppercase;">Administrador</p>
+                    </div>
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #8c909c;"><i class="fa-solid fa-user"></i></div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h3 style="font-weight: 800; color: #232c5f;">Ocorrências Aguardando Triagem</h3>
+                    <span style="background: #ef4444; color: white; padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 800;">2 URGENTES</span>
+                </div>
+
+                <div class="triage-grid">
+                    <div class="card triage-card">
+                        <span class="occ-id">#1044</span>
+                        <div class="occ-type">
+                            <i class="fa-solid fa-car-burst" style="color: #ef4444;"></i>
+                            Acidente de Viação
+                        </div>
+                        <div class="occ-meta">
+                            <span><i class="fa-solid fa-user"></i> Kina Mukumba</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Av. Deolinda Rodrigues, Palanca</span>
+                            <span><i class="fa-solid fa-clock"></i> Há 2 minutos</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: #475569; line-height: 1.5;">Vítima inconsciente presa nas ferragens. Necessário desencarceramento.</p>
+                        
+                        <div class="action-group">
+                            <button class="btn-reject">Rejeitar</button>
+                            <button class="btn-approve" onclick="approve(this)">Aprovar e Redirecionar</button>
+                        </div>
+                    </div>
+
+                    <div class="card triage-card">
+                        <span class="occ-id">#1045</span>
+                        <div class="occ-type">
+                            <i class="fa-solid fa-heart-pulse" style="color: #ef4444;"></i>
+                            Paragem Cardio-respiratória
+                        </div>
+                        <div class="occ-meta">
+                            <span><i class="fa-solid fa-user"></i> João Silva</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Rua Direita da Samba</span>
+                            <span><i class="fa-solid fa-clock"></i> Há 5 minutos</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: #475569; line-height: 1.5;">Idoso de 70 anos, sem pulso. Reanimação em curso por familiares.</p>
+                        
+                        <div class="action-group">
+                            <button class="btn-reject">Rejeitar</button>
+                            <button class="btn-approve" onclick="approve(this)">Aprovar e Redirecionar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function approve(btn) {
+            const card = btn.closest('.triage-card');
+            card.classList.add('approved');
+            btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Redirecionado';
+            btn.style.backgroundColor = '#10b981';
+            
+            setTimeout(() => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateX(100px)';
+                setTimeout(() => card.remove(), 500);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

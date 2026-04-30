@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA - O Meu Perfil</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    
+    <style>
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .profile-avatar-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--primary-yellow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--primary-blue);
+            border: 5px solid white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .profile-info-main h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-info-main p {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+        }
+
+        .info-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .info-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-group p {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .stats-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-mini-card {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .stat-mini-card h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+        }
+
+        .stat-mini-card span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .history-list {
+            margin-top: 1rem;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .history-item:last-child { border-bottom: none; }
+
+        .history-meta h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.25rem;
+        }
+
+        .history-meta span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .status-pill {
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+        }
+
+        .status-completed { background-color: #e8f5e9; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-asterisk"></i>
+                <span>INEMA</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="fa-solid fa-house"></i> Início
+                </a>
+                <a href="pedir_ajuda.html" class="nav-link">
+                    <i class="fa-solid fa-circle-exclamation"></i> Nova Ocorrência
+                </a>
+                <a href="acompanhamento.html" class="nav-link">
+                    <i class="fa-solid fa-map-location-dot"></i> Acompanhamento
+                </a>
+                <a href="perfil.html" class="nav-link active">
+                    <i class="fa-solid fa-user"></i> O Meu Perfil
+                </a>
+                <a href="../login.html" class="nav-link logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-blue);">O Meu Perfil</h2>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="btn" style="background: none; border: 1px solid #ddd; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">
+                        <i class="fa-solid fa-pen-to-square"></i> Editar
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <div class="profile-header">
+                    <div class="profile-avatar-large">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="profile-info-main">
+                        <h2>Kina Mukumba</h2>
+                        <p>Cidadão • Desde Abril 2026</p>
+                    </div>
+                </div>
+
+                <div class="profile-grid">
+                    <div class="card">
+                        <h3 style="font-weight: 800; color: var(--primary-blue); margin-bottom: 2rem;">Informações da Conta</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                            <div class="info-group">
+                                <label>Nome Completo</label>
+                                <p>Kina Mukumba</p>
+                            </div>
+                            <div class="info-group">
+                                <label>Nº de Telemóvel</label>
+                                <p>+244 931 917 997</p>
+                            </div>
+                            <div class="info-group">
+                                <label>E-mail</label>
+                                <p>kina.mukumba@exemplo.ao</p>
+                            </div>
+                            <div class="info-group">
+                                <label>Localização Padrão</label>
+                                <p>Luanda, Maianga</p>
+                            </div>
+                        </div>
+
+                        <h3 style="font-weight: 800; color: var(--primary-blue); margin: 2rem 0 1.5rem;">Resumo de Atividade</h3>
+                        <div class="stats-summary">
+                            <div class="stat-mini-card">
+                                <h3>14</h3>
+                                <span>Ocorrências Totais</span>
+                            </div>
+                            <div class="stat-mini-card">
+                                <h3>432</h3>
+                                <span>Pontos de Cidadão</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="font-weight: 800; color: var(--primary-blue); margin-bottom: 1.5rem;">Histórico Recente</h3>
+                        <div class="history-list">
+                            <div class="history-item">
+                                <div class="history-meta">
+                                    <h4>Acidente de Viação</h4>
+                                    <span>Hoje, 14:20 • Av. Deolinda</span>
+                                </div>
+                                <span class="status-pill status-completed">Concluído</span>
+                            </div>
+                            <div class="history-item">
+                                <div class="history-meta">
+                                    <h4>Doença Súbita</h4>
+                                    <span>Ontem, 09:15 • Maianga</span>
+                                </div>
+                                <span class="status-pill status-completed">Concluído</span>
+                            </div>
+                            <div class="history-item">
+                                <div class="history-meta">
+                                    <h4>Queda Grave</h4>
+                                    <span>12 Abr, 18:30 • Viana</span>
+                                </div>
+                                <span class="status-pill status-completed">Concluído</span>
+                            </div>
+                        </div>
+                        <button style="width: 100%; background: none; border: none; color: var(--primary-blue); font-weight: 700; font-size: 0.85rem; margin-top: 1.5rem; cursor: pointer;">Ver Todo o Histórico</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA - Acompanhamento em Tempo Real</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    
+    <style>
+        .map-container {
+            height: 500px;
+            width: 100%;
+            border-radius: 1.25rem;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        #map { height: 100%; width: 100%; z-index: 1; }
+
+        .map-overlay-info {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            z-index: 10;
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 1px solid #eee;
+        }
+
+        .pulse-dot {
+            width: 12px;
+            height: 12px;
+            background-color: #2e7d32;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .pulse-dot::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: inherit;
+            border-radius: 50%;
+            animation: dotPulse 1.5s infinite;
+        }
+
+        @keyframes dotPulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        .tracking-details {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .detail-item .icon-box {
+            width: 50px;
+            height: 50px;
+            background-color: #f0f2f5;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+        }
+
+        .detail-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+        }
+
+        .tracking-header {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .occ-badge {
+            width: 45px;
+            height: 45px;
+            background-color: #fef2f2;
+            color: #ef4444;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .custom-marker {
+            background: none;
+            border: none;
+        }
+
+        .ambulance-icon {
+            font-size: 2.5rem;
+            color: #ef4444;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        }
+
+        .user-location-icon {
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-asterisk"></i>
+                <span>INEMA</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="fa-solid fa-house"></i> Início
+                </a>
+                <a href="pedir_ajuda.html" class="nav-link">
+                    <i class="fa-solid fa-circle-exclamation"></i> Nova Ocorrência
+                </a>
+                <a href="acompanhamento.html" class="nav-link active">
+                    <i class="fa-solid fa-map-location-dot"></i> Acompanhamento
+                </a>
+                <a href="perfil.html" class="nav-link">
+                    <i class="fa-solid fa-user"></i> O Meu Perfil
+                </a>
+                <a href="../login.html" class="nav-link logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="tracking-header">
+                    <div class="occ-badge">
+                        <i class="fa-solid fa-truck-medical"></i>
+                    </div>
+                    <div>
+                        <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-blue); margin: 0;">Ocorrência #1043</h2>
+                        <p style="font-size: 0.8rem; font-weight: 700; color: #ef4444; margin: 0;">A Despachar Viatura</p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.85rem; font-weight: 800; color: var(--primary-blue);">Kina Mukumba</p>
+                        <p style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Cidadão</p>
+                    </div>
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: var(--text-muted);"><i class="fa-solid fa-user"></i></div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <div class="map-container">
+                    <div class="map-overlay-info">
+                        <div class="pulse-dot"></div>
+                        <span style="font-weight: 800; font-size: 0.9rem; color: var(--primary-blue);">Viatura LD-44-55 em Deslocação!</span>
+                    </div>
+                    <div id="map"></div>
+                </div>
+
+                <div class="card tracking-details">
+                    <div class="detail-item">
+                        <div class="icon-box">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div>
+                            <p class="detail-label">Tempo Estimado</p>
+                            <p class="detail-value">11 Min(s)</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="icon-box">
+                            <i class="fa-solid fa-ambulance"></i>
+                        </div>
+                        <div>
+                            <p class="detail-label">Equipa & Viatura</p>
+                            <p class="detail-value">LD-44-55 (Suporte Avançado)</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="icon-box">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div>
+                            <p class="detail-label">Sua Localização GPS</p>
+                            <p class="detail-value">-8.8354, 13.2389</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        // Inicialização do Mapa (Coordenadas de Luanda)
+        const map = L.map('map').setView([-8.8354, 13.2389], 14);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Marcador do Utente
+        const userIcon = L.divIcon({
+            html: '<i class="fa-solid fa-location-dot user-location-icon"></i>',
+            className: 'custom-marker',
+            iconSize: [30, 30],
+            iconAnchor: [15, 30]
+        });
+        L.marker([-8.8354, 13.2389], {icon: userIcon}).addTo(map)
+            .bindPopup('Sua localização de emergência').openPopup();
+
+        // Marcador da Ambulância
+        const ambulanceIcon = L.divIcon({
+            html: '<i class="fa-solid fa-truck-medical ambulance-icon"></i>',
+            className: 'custom-marker',
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+        });
+        const ambulanceMarker = L.marker([-8.8154, 13.2189], {icon: ambulanceIcon}).addTo(map)
+            .bindPopup('Viatura em caminho!');
+
+        // Simulação de movimento (opcional)
+        let lat = -8.8154;
+        let lng = 13.2189;
+        setInterval(() => {
+            lat -= 0.0001;
+            lng += 0.0001;
+            ambulanceMarker.setLatLng([lat, lng]);
+        }, 3000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel INEMA - Dashboard</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="assets/css/reset.css">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    
+    <!-- Biblioteca Chart.js para o Gráfico de Barras -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- Header Interno -->
+    <header class="dash-header">
+        <div class="container">
+            <div class="user-profile">
+                <div class="avatar-circle">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <h2>Moisés Kialanda</h2>
+                    <p>Usuário 54321</p>
+                </div>
+            </div>
+            <div>
+                <a href="painel.html" class="btn-header">Voltar</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Dashboard -->
+    <main class="dash-content container animate-on-scroll is-visible fade-in">
+        
+        <h1 class="dashboard-title">Dashboard</h1>
+
+        <!-- Top Metrics Cards -->
+        <div class="stats-top-grid">
+            <div class="stat-box">
+                <h4>Total de<br>Ocorrências</h4>
+                <h2>14</h2>
+            </div>
+            <div class="stat-box">
+                <h4>Respostas<br>Apresentadas</h4>
+                <h2>132</h2>
+            </div>
+            <div class="stat-box">
+                <h4>Pontos<br>Acumulados</h4>
+                <h2>432</h2>
+            </div>
+        </div>
+
+        <div class="dash-main-grid">
+            <!-- Left Col: Ocorrências Registradas -->
+            <div class="card-dash" style="padding-bottom: 20px;">
+                <div class="list-header">
+                    <span>Últimas Ocorrências Registradas</span>
+                    <span>Estado</span>
+                </div>
+                
+                <div class="occurrence-item">
+                    <div>
+                        <h4>Acidente de Viação</h4>
+                        <p>Avenida Deolinda Rodrigues<br>Segunda, 12 de Abril 2026</p>
+                    </div>
+                    <span class="status-green">Finalizado</span>
+                </div>
+                <div class="occurrence-item">
+                    <div>
+                        <h4>Inundações de Água</h4>
+                        <p>Avenida Deolinda Rodrigues<br>Segunda, 12 de Abril 2026</p>
+                    </div>
+                    <span class="status-green">Finalizado</span>
+                </div>
+                <div class="occurrence-item">
+                    <div>
+                        <h4>Afogamento</h4>
+                        <p>Avenida Deolinda Rodrigues<br>Segunda, 12 de Abril 2026</p>
+                    </div>
+                    <span class="status-green">Finalizado</span>
+                </div>
+                <div class="occurrence-item">
+                    <div>
+                        <h4>Acidente de Viação</h4>
+                        <p>Avenida Deolinda Rodrigues<br>Segunda, 12 de Abril 2026</p>
+                    </div>
+                    <span class="status-green">Finalizado</span>
+                </div>
+                <div class="occurrence-item" style="border-bottom: none; margin-bottom: 0;">
+                    <div>
+                        <h4>Acidente de Viação</h4>
+                        <p>Avenida Deolinda Rodrigues<br>Segunda, 12 de Abril 2026</p>
+                    </div>
+                    <span class="status-green">Finalizado</span>
+                </div>
+                
+                <a href="#" class="btn-veja-tudo">Ver tudo</a>
+            </div>
+
+            <!-- Right Col: Gráfico e Acções -->
+            <div>
+                <!-- Gráfico Chart.js -->
+                <div class="card-dash chart-card">
+                    <h4 style="margin-bottom:20px; font-weight:600; color:var(--primary-blue);">Balanço mensal de ocorrências</h4>
+                    <div style="position: relative; height: 250px; width: 100%;">
+                        <canvas id="occurrencesChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Acções base -->
+                <div class="actions-bottom-grid">
+                    <div class="card-dash pendente-mini">
+                        <p style="color:var(--text-muted); font-size:13px; text-align:left; margin-bottom:10px;">Pendentes</p>
+                        <h1>X</h1>
+                        <p style="font-size:14px; font-weight:600; color:var(--text-dark);">Nenhum Pendente de Momento</p>
+                    </div>
+                    
+                    <div class="card-dash" style="padding: 20px;">
+                        <p style="color:var(--text-muted); font-size:13px; margin-bottom: 20px; text-align:center;">Botões de Acção</p>
+                        <div class="btn-action-list">
+                            <a href="#" class="btn-action">Registrar</a>
+                            <a href="index.html" class="btn-action">Ir ao Início</a>
+                            <a href="perfil.html" class="btn-action">Voltar ao Perfil</a>
+                            <a href="login.html" class="btn-action btn-danger">Terminar Sessão</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>

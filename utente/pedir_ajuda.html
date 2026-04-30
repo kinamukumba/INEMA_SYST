@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA - Registar Nova Ocorrência</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    
+    <style>
+        .form-card {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 3rem;
+        }
+
+        .form-card h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-card p {
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group label {
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .form-control {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 1rem 1.25rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            background-color: white;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(35, 44, 95, 0.05);
+        }
+
+        .step-2 { display: none; }
+
+        .type-select-wrapper {
+            position: relative;
+        }
+
+        .type-select-wrapper i {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .status-badge-inline {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 1rem 1.25rem;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 2rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .radio-option input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-asterisk"></i>
+                <span>INEMA</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="fa-solid fa-house"></i> Início
+                </a>
+                <a href="pedir_ajuda.html" class="nav-link active">
+                    <i class="fa-solid fa-circle-exclamation"></i> Nova Ocorrência
+                </a>
+                <a href="acompanhamento.html" class="nav-link">
+                    <i class="fa-solid fa-map-location-dot"></i> Acompanhamento
+                </a>
+                <a href="perfil.html" class="nav-link">
+                    <i class="fa-solid fa-user"></i> O Meu Perfil
+                </a>
+                <a href="../login.html" class="nav-link logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-blue);">Registar Nova Ocorrência</h2>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.85rem; font-weight: 800; color: var(--primary-blue);">Kina Mukumba</p>
+                        <p style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Cidadão</p>
+                    </div>
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: var(--text-muted);"><i class="fa-solid fa-user"></i></div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- Passo 1 -->
+                <div id="step1" class="card form-card">
+                    <h2>Nova Ocorrência</h2>
+                    <p>Preencha os dados da emergência abaixo.</p>
+
+                    <div class="form-group">
+                        <label>Tipo de Ocorrência *</label>
+                        <div class="type-select-wrapper">
+                            <select id="occurrenceType" class="form-control" style="appearance: none;">
+                                <option value="" disabled selected>Selecione o tipo</option>
+                                <option value="transito">Acidente de Trânsito / Viação</option>
+                                <option value="queda">Queda Grave</option>
+                                <option value="doenca">Doença Súbita</option>
+                                <option value="agressao">Agressão Física</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary-dark" style="margin-top: 1rem;" onclick="showStep2()">Seguinte</button>
+                </div>
+
+                <!-- Passo 2 -->
+                <div id="step2" class="card form-card step-2">
+                    <div class="status-badge-inline">
+                        <i class="fa-solid fa-circle-check"></i>
+                        Ocorrência tipificada. Preencha os campos abaixo.
+                    </div>
+
+                    <div class="form-group">
+                        <label>Local da Ocorrência *</label>
+                        <input type="text" class="form-control" placeholder="Endereço completo">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Número de Vítimas Envolvidas</label>
+                        <input type="number" class="form-control" placeholder="Quantidade">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Existem Feridos Graves?</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="graves" value="sim"> Sim
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="graves" value="nao"> Não
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Observações Adicionais</label>
+                        <textarea class="form-control" rows="4" placeholder="Informações adicionais para os paramédicos..."></textarea>
+                    </div>
+
+                    <button class="btn-primary-dark" style="margin-top: 1rem;" onclick="submitOccurrence()">Concluir</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function showStep2() {
+            const type = document.getElementById('occurrenceType').value;
+            if(!type) {
+                alert('Por favor, selecione o tipo de ocorrência.');
+                return;
+            }
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+        }
+
+        function submitOccurrence() {
+            // Simulação de submissão
+            alert('Ocorrência registada com sucesso! Redirecionando para acompanhamento...');
+            window.location.href = 'acompanhamento.html';
+        }
+    </script>
+</body>
+</html>

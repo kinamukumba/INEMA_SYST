@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA Central - Gestão de Bases</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    
+    <style>
+        .table-card { padding: 3rem; border-radius: 1.5rem; }
+        .card-header-icon { display: flex; align-items: center; gap: 1rem; margin-bottom: 2.5rem; }
+        .card-header-icon i { font-size: 1.5rem; color: #232c5f; }
+        .card-header-icon h2 { font-size: 1.25rem; font-weight: 800; color: #232c5f; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; font-size: 0.8rem; font-weight: 800; color: #8c909c; text-transform: uppercase; padding-bottom: 1.5rem; border-bottom: 1px solid #f1f5f9; }
+        td { padding: 1.5rem 0; border-bottom: 1px solid #f1f5f9; vertical-align: middle; color: #232c5f; font-weight: 600; font-size: 0.9rem; }
+
+        .stat-badge {
+            background-color: #ebb924;
+            color: #232c5f;
+            padding: 0.4rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        .action-btn { background: none; border: none; cursor: pointer; color: #8c909c; font-size: 1rem; transition: color 0.2s; }
+        .action-btn:hover { color: #232c5f; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar admin-sidebar">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-satellite-dish" style="color: #ebb924;"></i>
+                <span>INEMA Central</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fa-solid fa-tower-broadcast"></i> Triagem
+                </a>
+                <a href="ocorrencias.html" class="nav-link">
+                    <i class="fa-solid fa-list-ul"></i> Ocorrências
+                </a>
+                <a href="estatisticas.html" class="nav-link">
+                    <i class="fa-solid fa-chart-pie"></i> Estatísticas
+                </a>
+                <a href="registar_base.html" class="nav-link">
+                    <i class="fa-solid fa-building-circle-plus"></i> Registar Base
+                </a>
+                <a href="gestao_bases.html" class="nav-link active">
+                    <i class="fa-solid fa-city"></i> Gestão de Bases
+                </a>
+                
+                <a href="index.html" class="nav-link logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 style="font-size: 1.1rem; font-weight: 800; color: #232c5f;">Gestão e Edição de Bases</h2>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;">Admin Moisés</p>
+                        <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c; text-transform: uppercase;">Administrador</p>
+                    </div>
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #8c909c;"><i class="fa-solid fa-user"></i></div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <div class="card table-card">
+                    <div class="card-header-icon">
+                        <i class="fa-solid fa-building-user"></i>
+                        <h2>Polos Operacionais do INEMA</h2>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome da Base</th>
+                                <th>Município</th>
+                                <th>Endereço</th>
+                                <th style="text-align: center;">Capacidade (Vias.)</th>
+                                <th style="text-align: center;">Ocorrências Processadas</th>
+                                <th style="text-align: center;">Credenciais</th>
+                                <th style="text-align: center;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Popula</td>
+                                <td>Belas</td>
+                                <td>Luanda</td>
+                                <td style="text-align: center; color: #3b82f6;">1</td>
+                                <td style="text-align: center;"><span class="stat-badge">0 Atendimentos</span></td>
+                                <td style="text-align: center;"><button class="action-btn"><i class="fa-solid fa-eye"></i></button></td>
+                                <td style="text-align: center;"><button class="action-btn"><i class="fa-solid fa-pen"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

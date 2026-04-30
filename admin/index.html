@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA Central - Acesso Restrito</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    
+    <style>
+        body {
+            background-color: #1e2530; /* Azul escuro do UI */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .login-card {
+            background-color: white;
+            width: 100%;
+            max-width: 420px;
+            padding: 3.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            background-color: #f0f2f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 1.5rem;
+            color: #232c5f;
+        }
+
+        .login-card h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #232c5f;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-card p.subtitle {
+            color: #8c909c;
+            font-size: 0.85rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: #232c5f;
+            margin-bottom: 0.75rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            border: 1px solid #e9ecef;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            background-color: white;
+            box-sizing: border-box;
+        }
+
+        .btn-login {
+            width: 100%;
+            background-color: #232c5f;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-login:hover {
+            background-color: #1a214a;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="icon-box">
+            <i class="fa-solid fa-tower-broadcast"></i>
+        </div>
+        <h1>Central INEMA</h1>
+        <p class="subtitle">Acesso exclusivo para Administradores</p>
+
+        <form action="dashboard.html" method="GET">
+            <div class="form-group">
+                <label>E-mail Institucional</label>
+                <input type="email" class="form-control" placeholder="moises.admin@inema.ao" required>
+            </div>
+
+            <div class="form-group">
+                <label>Palavra-passe</label>
+                <input type="password" class="form-control" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn-login">Aceder à Central</button>
+        </form>
+    </div>
+</body>
+</html>

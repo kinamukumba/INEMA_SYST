@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA Central - Registar Base</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    
+    <style>
+        .form-card {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 3.5rem;
+            border-radius: 1.5rem;
+        }
+
+        .card-header-icon {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-header-icon i { font-size: 1.5rem; color: #232c5f; }
+        .card-header-icon h2 { font-size: 1.5rem; font-weight: 800; color: #232c5f; }
+
+        .form-card p { color: #8c909c; font-size: 0.95rem; margin-bottom: 3rem; }
+
+        .form-group { margin-bottom: 1.5rem; text-align: left; }
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #232c5f;
+            margin-bottom: 0.75rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 1px solid #e9ecef;
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
+            background-color: #f8f9fa;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            background-color: white;
+            border-color: #232c5f;
+            box-shadow: 0 0 0 4px rgba(35, 44, 95, 0.05);
+            outline: none;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: #232c5f;
+            color: white;
+            border: none;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar admin-sidebar">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-satellite-dish" style="color: #ebb924;"></i>
+                <span>INEMA Central</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fa-solid fa-tower-broadcast"></i> Triagem
+                </a>
+                <a href="ocorrencias.html" class="nav-link">
+                    <i class="fa-solid fa-list-ul"></i> Ocorrências
+                </a>
+                <a href="estatisticas.html" class="nav-link">
+                    <i class="fa-solid fa-chart-pie"></i> Estatísticas
+                </a>
+                <a href="registar_base.html" class="nav-link active">
+                    <i class="fa-solid fa-building-circle-plus"></i> Registar Base
+                </a>
+                <a href="gestao_bases.html" class="nav-link">
+                    <i class="fa-solid fa-city"></i> Gestão de Bases
+                </a>
+                
+                <a href="index.html" class="nav-link logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 style="font-size: 1.1rem; font-weight: 800; color: #232c5f;">Registar Nova Base</h2>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;">Admin Moisés</p>
+                        <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c; text-transform: uppercase;">Administrador</p>
+                    </div>
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #8c909c;"><i class="fa-solid fa-user"></i></div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <div class="card form-card">
+                    <div class="card-header-icon">
+                        <i class="fa-solid fa-building-shield"></i>
+                        <h2>Cadastro de Nova Base Operacional</h2>
+                    </div>
+                    <p>Adicione um novo polo do INEMA ao sistema para alocação de equipas e viaturas médicas.</p>
+
+                    <form>
+                        <div class="form-group">
+                            <label>Nome Oficial da Base *</label>
+                            <input type="text" class="form-control" placeholder="Ex: Base INEMA Mutamba">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Endereço Completo *</label>
+                            <input type="text" class="form-control" placeholder="Rua, Bairro, Ponto de Referência">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Município *</label>
+                                <input type="text" class="form-control" placeholder="Ex: Luanda, Talatona, Viana">
+                            </div>
+                            <div class="form-group">
+                                <label>Capacidade (Máx. Viaturas) *</label>
+                                <input type="text" class="form-control" placeholder="Ex: 5">
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-submit">
+                            <i class="fa-solid fa-plus"></i> Guardar Polo INEMA
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

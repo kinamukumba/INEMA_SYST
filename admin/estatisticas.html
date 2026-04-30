@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA Central - Estatísticas</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 1.25rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
+
+        .stat-card h3 { font-size: 0.95rem; color: #232c5f; font-weight: 700; margin-bottom: 1.5rem; }
+        .stat-card h2 { font-size: 3.5rem; font-weight: 800; color: #232c5f; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .recent-list { margin-top: 1.5rem; }
+        .recent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .recent-info h4 { font-size: 1rem; font-weight: 700; color: #232c5f; margin-bottom: 0.25rem; }
+        .recent-info p { font-size: 0.8rem; color: #8c909c; }
+
+        .status-tag {
+            background-color: #fffbeb;
+            color: #d97706;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.4rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            width: 100%;
+            background: #f8f9fa;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Simulação de gráfico de linha */
+        .line-graph {
+            width: 80%;
+            height: 150px;
+            border-bottom: 2px solid #232c5f;
+            border-left: 2px solid #232c5f;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 0 10px;
+        }
+
+        .graph-point {
+            width: 12px;
+            height: 12px;
+            background: #232c5f;
+            border-radius: 50%;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar admin-sidebar">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-satellite-dish" style="color: #ebb924;"></i>
+                <span>INEMA Central</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fa-solid fa-tower-broadcast"></i> Triagem
+                </a>
+                <a href="ocorrencias.html" class="nav-link">
+                    <i class="fa-solid fa-list-ul"></i> Ocorrências
+                </a>
+                <a href="estatisticas.html" class="nav-link active">
+                    <i class="fa-solid fa-chart-pie"></i> Estatísticas
+                </a>
+                <a href="registar_base.html" class="nav-link">
+                    <i class="fa-solid fa-building-circle-plus"></i> Registar Base
+                </a>
+                <a href="gestao_bases.html" class="nav-link">
+                    <i class="fa-solid fa-city"></i> Gestão de Bases
+                </a>
+                
+                <a href="index.html" class="nav-link logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 style="font-size: 1.1rem; font-weight: 800; color: #232c5f;">Estatísticas Gerais</h2>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;">Admin Moisés</p>
+                        <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c; text-transform: uppercase;">Administrador</p>
+                    </div>
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #8c909c;"><i class="fa-solid fa-user"></i></div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <h1 style="text-align: center; color: #232c5f; font-weight: 800; margin-bottom: 2rem;">Dashboard</h1>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total de Ocorrências</h3>
+                        <h2>3</h2>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Respostas Apresentadas</h3>
+                        <h2>0</h2>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Bases em Operação</h3>
+                        <h2>1</h2>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="font-weight: 800; color: #232c5f;">Últimas Ocorrências Registradas</h3>
+                            <span style="font-size: 0.8rem; font-weight: 700; color: #8c909c;">Estado</span>
+                        </div>
+                        <div class="recent-list">
+                            <div class="recent-item">
+                                <div class="recent-info" style="border-left: 4px solid #10b981; padding-left: 1rem;">
+                                    <h4>Acidente de Viação</h4>
+                                    <p>Simulado na View • 19/04/2026</p>
+                                </div>
+                                <span class="status-tag">Despachado</span>
+                            </div>
+                            <div class="recent-item">
+                                <div class="recent-info" style="border-left: 4px solid #10b981; padding-left: 1rem;">
+                                    <h4>Afogamento</h4>
+                                    <p>Simulado na View • 19/04/2026</p>
+                                </div>
+                                <span class="status-tag">Despachado</span>
+                            </div>
+                            <div class="recent-item">
+                                <div class="recent-info" style="border-left: 4px solid #10b981; padding-left: 1rem;">
+                                    <h4>Dores no Peito / Coração</h4>
+                                    <p>Simulado na View • 19/04/2026</p>
+                                </div>
+                                <span class="status-tag">Despachado</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="font-weight: 800; color: #232c5f; margin-bottom: 1.5rem;">Balanço mensal de ocorrências</h3>
+                        <div class="chart-placeholder">
+                            <div class="line-graph">
+                                <!-- Simulação visual do gráfico da imagem -->
+                                <div class="graph-point" style="bottom: 10px;"></div>
+                                <div class="graph-point" style="bottom: 10px;"></div>
+                                <div class="graph-point" style="bottom: 10px;"></div>
+                                <div class="graph-point" style="bottom: 140px; background: #3b82f6;"></div>
+                                <div class="graph-point" style="bottom: 10px;"></div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; color: #8c909c; font-size: 0.7rem; font-weight: 700;">
+                            <span>Jan</span><span>Fev</span><span>Mar</span><span>Abr</span><span>Mai</span><span>Jun</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

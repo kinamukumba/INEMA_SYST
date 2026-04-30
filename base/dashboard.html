@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA Base - Despacho Operacional</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    
+    <style>
+        .alert-bar {
+            background-color: #fef2f2;
+            color: #ef4444;
+            padding: 1rem 3rem;
+            font-size: 0.8rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .dispatch-card {
+            max-width: 700px;
+            margin: 3rem auto;
+            border: 2px solid #ef4444;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .dispatch-card h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #ef4444;
+            margin-bottom: 1.5rem;
+        }
+
+        .dispatch-card .occ-info {
+            margin-bottom: 3rem;
+        }
+
+        .dispatch-card .occ-info h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #232c5f;
+            margin-bottom: 0.5rem;
+        }
+
+        .dispatch-card .occ-info p {
+            color: #8c909c;
+            font-size: 0.9rem;
+        }
+
+        .form-box {
+            background-color: #f8fafc;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #232c5f;
+            margin-bottom: 0.75rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            background-color: white;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.25rem;
+        }
+
+        .btn-dispatch {
+            width: 100%;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-top: 2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn-dispatch:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+
+        .sidebar-base .nav-link.active {
+            color: #10b981;
+            border-left-color: #10b981;
+            background-color: #f0fdf4;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar sidebar-base">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-hospital" style="color: #10b981;"></i>
+                <span>Base Viana</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link active">
+                    <i class="fa-solid fa-bell"></i> Despacho
+                </a>
+                <a href="viaturas.html" class="nav-link">
+                    <i class="fa-solid fa-ambulance"></i> Frota
+                </a>
+                <a href="equipas.html" class="nav-link">
+                    <i class="fa-solid fa-user-nurse"></i> Equipas
+                </a>
+                
+                <a href="index.html" class="nav-link logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 style="font-size: 1.1rem; font-weight: 800; color: #10b981;">Módulo de Despacho Operacional</h2>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;">Direção Popula</p>
+                        <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c;">Base INEMA Viana</p>
+                    </div>
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0fdf4; display: flex; align-items: center; justify-content: center; color: #10b981;"><i class="fa-solid fa-building-shield"></i></div>
+                </div>
+            </header>
+
+            <div class="alert-bar">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                ALERTA CENTRAL: 1 NOVA OCORRÊNCIA ENCAMINHADA PARA A SUA BASE
+            </div>
+
+            <div class="content-wrapper">
+                <div class="card dispatch-card">
+                    <h2><i class="fa-solid fa-triangle-exclamation"></i> Ocorrência Validada #3</h2>
+                    
+                    <div class="occ-info">
+                        <h3>Categoria: Acidente de Viação</h3>
+                        <p>Palanca (Simulado na View)</p>
+                        <p style="font-size: 0.75rem; margin-top: 0.5rem;">Encaminhado por Central de Triagem para Kina Mukumba</p>
+                    </div>
+
+                    <div class="form-box">
+                        <div class="form-group" style="margin-bottom: 2rem;">
+                            <label>Selecionar Viatura da Sua Frota Livre:</label>
+                            <select class="form-control">
+                                <option disabled selected>-- Escolha uma Viatura --</option>
+                                <option>LD-44-55 (Suporte Avançado)</option>
+                                <option>LD-12-88 (Suporte Básico)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Equipa Médica de Plantão:</label>
+                            <select class="form-control">
+                                <option disabled selected>-- Escolha a Equipa --</option>
+                                <option>Equipa A (Dr. Santos + 2 Paramédicos)</option>
+                                <option>Equipa B (Dra. Lima + 2 Paramédicos)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn-dispatch" onclick="startTracking()">
+                        <i class="fa-solid fa-truck-fast"></i> Acionar Viatura & Iniciar Tracking
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function startTracking() {
+            alert('Viatura acionada com sucesso! O utente já pode acompanhar o trajeto em tempo real.');
+        }
+    </script>
+</body>
+</html>

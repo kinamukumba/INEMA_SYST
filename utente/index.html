@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA - Início</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    
+    <style>
+        .status-alert {
+            background-color: var(--success);
+            color: var(--success-text);
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .status-alert h4 { font-weight: 800; font-size: 1.1rem; }
+        .status-alert p { font-size: 0.9rem; opacity: 0.9; }
+
+        .sos-section {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .sos-section h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .sos-section p.subtitle {
+            color: var(--text-muted);
+            margin-bottom: 4rem;
+        }
+
+        .sos-btn-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 4rem;
+        }
+
+        .sos-btn {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #ff4b4b 0%, #e53935 100%);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 15px 35px rgba(229, 57, 53, 0.4);
+            border: 8px solid rgba(255,255,255,0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2;
+            position: relative;
+        }
+
+        .sos-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 45px rgba(229, 57, 53, 0.5);
+        }
+
+        .sos-btn h2 { font-size: 2.5rem; font-weight: 900; margin: 0; line-height: 1; }
+        .sos-btn span { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+        .sos-pulse {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background-color: rgba(229, 57, 53, 0.2);
+            border-radius: 50%;
+            z-index: 1;
+            animation: sosPulse 2s infinite;
+        }
+
+        @keyframes sosPulse {
+            0% { width: 100%; height: 100%; opacity: 0.6; }
+            100% { width: 160%; height: 160%; opacity: 0; }
+        }
+
+        .legal-notice {
+            max-width: 600px;
+            margin: 0 auto;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-asterisk"></i>
+                <span>INEMA</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link active">
+                    <i class="fa-solid fa-house"></i> Início
+                </a>
+                <a href="pedir_ajuda.html" class="nav-link">
+                    <i class="fa-solid fa-circle-exclamation"></i> Nova Ocorrência
+                </a>
+                <a href="acompanhamento.html" class="nav-link">
+                    <i class="fa-solid fa-map-location-dot"></i> Acompanhamento
+                </a>
+                <a href="perfil.html" class="nav-link">
+                    <i class="fa-solid fa-user"></i> O Meu Perfil
+                </a>
+                
+                <a href="../login.html" class="nav-link logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="greeting">
+                    <h2 style="font-size: 1.1rem; font-weight: 700;">Olá, Kina Mukumba!</h2>
+                </div>
+                <div class="user-info">
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.85rem; font-weight: 800; color: var(--primary-blue);">Kina Mukumba</p>
+                        <p style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Cidadão</p>
+                    </div>
+                    <div class="user-avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <div class="status-alert">
+                    <h4>Sistema Pronto a Intervir</h4>
+                    <p>Não tem nenhuma emergência ativa no momento. Clique no botão vermelho se precisar de ajuda urgente.</p>
+                </div>
+
+                <div class="card sos-section">
+                    <h1>Precisas de Ajuda Imediata?</h1>
+                    <p class="subtitle">Em caso de emergência médica, prima o botão SOS abaixo.</p>
+
+                    <div class="sos-btn-wrapper">
+                        <div class="sos-pulse"></div>
+                        <a href="pedir_ajuda.html" class="sos-btn">
+                            <h2>SOS</h2>
+                            <span>Pedir Ajuda</span>
+                        </a>
+                    </div>
+
+                    <div class="legal-notice">
+                        Atenção: O uso indevido deste botão para falsas emergências é proibido e sujeito a penalizações legais. Certifique-se de preencher a localização corretamente na tela seguinte.
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
