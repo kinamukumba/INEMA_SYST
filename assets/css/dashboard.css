@@ -1,14 +1,101 @@
-/* Estilos Globais para Novo UI/UX */
+/* Dashboard & Sidebar Base Styles */
 .dashboard-layout {
     display: flex;
     min-height: 100vh;
-    background-color: var(--bg-body);
 }
 
-/* Sidebar Estilo Escuro (Admin) */
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--bg-sidebar);
+    padding: 2.5rem 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #f1f5f9;
+    position: fixed;
+    height: 100vh;
+    z-index: 100;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 2rem;
+    margin-bottom: 3.5rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+}
+
+.sidebar-logo i {
+    color: var(--primary-yellow);
+    font-size: 1.5rem;
+}
+
+.nav-menu {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0 1rem;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.nav-link i {
+    width: 20px;
+    font-size: 1.1rem;
+}
+
+.nav-link:hover, .nav-link.active {
+    background-color: #f8fafc;
+    color: var(--primary-blue);
+}
+
+.nav-link.logout {
+    margin-top: auto;
+    color: #ef4444;
+}
+
+.nav-link.logout:hover {
+    background-color: #fef2f2;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 0;
+    min-height: 100vh;
+}
+
+.top-bar {
+    height: var(--header-height);
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 3rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.content-wrapper {
+    padding: 3rem;
+}
+
+/* Admin Specific Sidebar (Dark) */
 .sidebar.admin-sidebar {
-    background-color: #232c5f; /* Azul Marinho Profundo */
-    border-right: none;
+    background-color: var(--primary-blue);
 }
 
 .sidebar.admin-sidebar .sidebar-logo,
@@ -24,107 +111,4 @@
 .sidebar.admin-sidebar .nav-link.active {
     background-color: rgba(255,255,255,0.1);
     color: white;
-}
-
-.sidebar-logo {
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--primary-blue);
-    margin-bottom: 3rem;
-}
-
-.sidebar-logo i {
-    color: var(--primary-yellow);
-}
-
-.nav-menu {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-.nav-link {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    padding: 1rem 2rem;
-    color: var(--text-muted);
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border-left: 4px solid transparent;
-}
-
-.nav-link i {
-    font-size: 1.2rem;
-    width: 24px;
-    text-align: center;
-}
-
-.nav-link:hover, .nav-link.active {
-    background-color: #f8f9fa;
-    color: var(--primary-blue);
-}
-
-.nav-link.active {
-    border-left-color: var(--primary-blue);
-    background-color: #f0f2f5;
-}
-
-.nav-link.logout {
-    color: var(--danger);
-    margin-top: auto;
-}
-
-/* Main Content Area */
-.main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    max-height: 100vh;
-    overflow-y: auto;
-}
-
-.top-bar {
-    height: 80px;
-    background-color: var(--white);
-    padding: 0 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.content-wrapper {
-    padding: 2.5rem 3rem;
-}
-
-/* Utilitários de Design */
-.card {
-    background-color: var(--white);
-    border-radius: 1.25rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    padding: 2rem;
-}
-
-.btn-primary-dark {
-    background-color: var(--primary-blue);
-    color: var(--white);
-    padding: 1rem 2rem;
-    border-radius: 0.75rem;
-    font-weight: 700;
-    width: 100%;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-primary-dark:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
 }

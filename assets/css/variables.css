@@ -1,36 +1,21 @@
 :root {
-    /* Cores Primárias - Novo Design */
-    --primary-blue: #232c5f;      /* Azul Marinho Profundo */
-    --primary-yellow: #ebb924;    /* Amarelo Logo */
-    
-    /* Cores de Interface */
-    --bg-body: #f4f7f6;           /* Cinza super claro do UI */
-    --bg-card: #ffffff;
+    /* Cores do Novo Design System */
+    --primary-blue: #232c5f;
+    --primary-yellow: #ebb924;
+    --bg-body: #f8fafc;
     --bg-sidebar: #ffffff;
-    --text-dark: #232c5f;
-    --text-muted: #8c909c;
     --white: #ffffff;
-    --danger: #ff4b4b;
-    --success: #e8f5e9;
-    --success-text: #2e7d32;
-    
-    /* Estados */
+    --text-main: #232c5f;
+    --text-muted: #8c909c;
     --success: #10b981;
+    --error: #ef4444;
     --warning: #f59e0b;
-    --danger: #ef4444;
-    --info: #3b82f6;
-
-    /* Design System (Tailwind Style) */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     
-    --radius-sm: 0.375rem; /* 6px */
-    --radius-md: 0.75rem;  /* 12px */
-    --radius-lg: 1rem;     /* 16px */
-    --radius-xl: 1.5rem;   /* 24px */
-    --radius-full: 9999px;
-
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Layout */
+    --sidebar-width: 260px;
+    --header-height: 80px;
+    --radius-md: 0.75rem;
+    --radius-lg: 1.25rem;
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
 }

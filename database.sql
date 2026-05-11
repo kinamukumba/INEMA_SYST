@@ -58,7 +58,6 @@ CREATE TABLE IF NOT EXISTS viaturas (
     placa VARCHAR(20) NOT NULL UNIQUE,
     modelo VARCHAR(50) NOT NULL,
     tipo_suporte ENUM('basico', 'medio', 'avancado') DEFAULT 'basico',
-    status EN_ATENDIMENTO BOOLEAN DEFAULT FALSE,
     status_vtr ENUM('disponivel', 'em_missao', 'manutencao') DEFAULT 'disponivel',
     FOREIGN KEY (base_id) REFERENCES bases(id)
 );

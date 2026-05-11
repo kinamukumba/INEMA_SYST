@@ -18,108 +18,32 @@
     
     <style>
         .alert-bar {
-            background-color: #fef2f2;
-            color: #ef4444;
-            padding: 1rem 3rem;
-            font-size: 0.8rem;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            background-color: #fef2f2; color: #ef4444;
+            padding: 1rem 3rem; font-size: 0.8rem; font-weight: 800;
+            display: none; align-items: center; gap: 0.75rem;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
 
         .dispatch-card {
-            max-width: 700px;
-            margin: 3rem auto;
-            border: 2px solid #ef4444;
-            padding: 3rem;
-            text-align: center;
+            max-width: 700px; margin: 3rem auto;
+            border: 2px solid #10b981; padding: 3rem; text-align: center;
+            display: none; /* Só mostra se houver ocorrência */
         }
 
-        .dispatch-card h2 {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: #ef4444;
-            margin-bottom: 1.5rem;
-        }
+        .dispatch-card.urgent { border-color: #ef4444; }
 
-        .dispatch-card .occ-info {
-            margin-bottom: 3rem;
-        }
-
-        .dispatch-card .occ-info h3 {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #232c5f;
-            margin-bottom: 0.5rem;
-        }
-
-        .dispatch-card .occ-info p {
-            color: #8c909c;
-            font-size: 0.9rem;
-        }
-
-        .form-box {
-            background-color: #f8fafc;
-            padding: 2.5rem;
-            border-radius: 1rem;
-            border: 1px solid #e2e8f0;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 800;
-            color: #232c5f;
-            margin-bottom: 0.75rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.875rem 1.25rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 0.5rem;
-            font-size: 0.95rem;
-            background-color: white;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1.25rem;
-        }
+        .dispatch-card h2 { font-size: 1.75rem; font-weight: 800; color: #ef4444; margin-bottom: 1.5rem; }
+        .form-box { background-color: #f8fafc; padding: 2.5rem; border-radius: 1rem; border: 1px solid #e2e8f0; text-align: left; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 800; color: #232c5f; margin-bottom: 0.75rem; }
+        .form-control { width: 100%; padding: 0.875rem 1.25rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.95rem; }
 
         .btn-dispatch {
-            width: 100%;
-            background-color: #10b981;
-            color: white;
-            border: none;
-            padding: 1.25rem;
-            border-radius: 0.75rem;
-            font-size: 1.1rem;
-            font-weight: 800;
-            margin-top: 2rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            transition: all 0.2s;
-            text-transform: uppercase;
+            width: 100%; background-color: #10b981; color: white; border: none; padding: 1.25rem;
+            border-radius: 0.75rem; font-size: 1.1rem; font-weight: 800; margin-top: 2rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 1rem;
         }
-
-        .btn-dispatch:hover {
-            background-color: #059669;
-            transform: translateY(-2px);
-        }
-
-        .sidebar-base .nav-link.active {
-            color: #10b981;
-            border-left-color: #10b981;
-            background-color: #f0fdf4;
-        }
+        
+        .no-tasks { text-align: center; padding: 5rem; color: #8c909c; }
     </style>
 </head>
 <body>
@@ -127,7 +51,7 @@
         <aside class="sidebar sidebar-base">
             <div class="sidebar-logo">
                 <i class="fa-solid fa-hospital" style="color: #10b981;"></i>
-                <span>Base Viana</span>
+                <span id="baseNameSidebar">Base INEMA</span>
             </div>
             <nav class="nav-menu">
                 <a href="dashboard.html" class="nav-link active">
@@ -139,8 +63,7 @@
                 <a href="equipas.html" class="nav-link">
                     <i class="fa-solid fa-user-nurse"></i> Equipas
                 </a>
-                
-                <a href="index.html" class="nav-link logout">
+                <a href="#" class="nav-link logout" id="btnLogout">
                     <i class="fa-solid fa-right-from-bracket"></i> Sair
                 </a>
             </nav>
@@ -151,59 +74,113 @@
                 <h2 style="font-size: 1.1rem; font-weight: 800; color: #10b981;">Módulo de Despacho Operacional</h2>
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <div style="text-align: right;">
-                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;">Direção Popula</p>
-                        <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c;">Base INEMA Viana</p>
+                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;" id="baseNameHeader">Direção Base</p>
+                        <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c;">Polo INEMA</p>
                     </div>
                     <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0fdf4; display: flex; align-items: center; justify-content: center; color: #10b981;"><i class="fa-solid fa-building-shield"></i></div>
                 </div>
             </header>
 
-            <div class="alert-bar">
+            <div id="alertBar" class="alert-bar">
                 <i class="fa-solid fa-circle-exclamation"></i>
-                ALERTA CENTRAL: 1 NOVA OCORRÊNCIA ENCAMINHADA PARA A SUA BASE
+                ALERTA CENTRAL: NOVA OCORRÊNCIA ENCAMINHADA PARA A SUA BASE
             </div>
 
-            <div class="content-wrapper">
-                <div class="card dispatch-card">
-                    <h2><i class="fa-solid fa-triangle-exclamation"></i> Ocorrência Validada #3</h2>
-                    
-                    <div class="occ-info">
-                        <h3>Categoria: Acidente de Viação</h3>
-                        <p>Palanca (Simulado na View)</p>
-                        <p style="font-size: 0.75rem; margin-top: 0.5rem;">Encaminhado por Central de Triagem para Kina Mukumba</p>
-                    </div>
-
-                    <div class="form-box">
-                        <div class="form-group" style="margin-bottom: 2rem;">
-                            <label>Selecionar Viatura da Sua Frota Livre:</label>
-                            <select class="form-control">
-                                <option disabled selected>-- Escolha uma Viatura --</option>
-                                <option>LD-44-55 (Suporte Avançado)</option>
-                                <option>LD-12-88 (Suporte Básico)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Equipa Médica de Plantão:</label>
-                            <select class="form-control">
-                                <option disabled selected>-- Escolha a Equipa --</option>
-                                <option>Equipa A (Dr. Santos + 2 Paramédicos)</option>
-                                <option>Equipa B (Dra. Lima + 2 Paramédicos)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <button class="btn-dispatch" onclick="startTracking()">
-                        <i class="fa-solid fa-truck-fast"></i> Acionar Viatura & Iniciar Tracking
-                    </button>
+            <div class="content-wrapper" id="dispatchContent">
+                <div class="no-tasks">
+                    <i class="fa-solid fa-check-circle fa-3x" style="margin-bottom: 1rem; opacity: 0.3;"></i>
+                    <p>Sem ocorrências pendentes no momento.</p>
                 </div>
             </div>
         </main>
     </div>
 
+    <script src="../assets/js/api.js"></script>
     <script>
-        function startTracking() {
-            alert('Viatura acionada com sucesso! O utente já pode acompanhar o trajeto em tempo real.');
+        let currentOccurrenceId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await loadUserData();
+            if (!user) return;
+
+            document.getElementById('baseNameSidebar').textContent = user.nome;
+            document.getElementById('baseNameHeader').textContent = user.nome;
+
+            checkNewTasks();
+            setInterval(checkNewTasks, 10000); // Polling a cada 10s
+
+            document.getElementById('btnLogout').addEventListener('click', async () => {
+                await ApiClient.get('auth.php?action=logout');
+                window.location.href = '../login.html';
+            });
+        });
+
+        async function checkNewTasks() {
+            const res = await ApiClient.get('base.php?action=get_new_occurrences');
+            if (res.success && res.data.length > 0) {
+                const occ = res.data[0];
+                currentOccurrenceId = occ.id;
+                document.getElementById('alertBar').style.display = 'flex';
+                renderDispatchCard(occ);
+            } else {
+                document.getElementById('alertBar').style.display = 'none';
+                document.getElementById('dispatchContent').innerHTML = `
+                    <div class="no-tasks">
+                        <i class="fa-solid fa-check-circle fa-3x" style="margin-bottom: 1rem; opacity: 0.3;"></i>
+                        <p>Sem ocorrências pendentes no momento.</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function renderDispatchCard(occ) {
+            const resources = await ApiClient.get('base.php?action=get_fleet_and_teams');
+            
+            document.getElementById('dispatchContent').innerHTML = `
+                <div class="card dispatch-card urgent" style="display: block;">
+                    <h2><i class="fa-solid fa-triangle-exclamation"></i> Ocorrência Validada #${occ.id}</h2>
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="font-weight: 800; color: #232c5f;">${occ.nome_categoria}</h3>
+                        <p style="color: #8c909c;">${occ.localizacao_texto}</p>
+                        <p style="font-size: 0.75rem; margin-top: 0.5rem;">Solicitado por: ${occ.utente_nome}</p>
+                    </div>
+
+                    <div class="form-box">
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label>Selecionar Viatura Disponível:</label>
+                            <select id="vtrSelect" class="form-control">
+                                ${resources.data.viaturas.map(v => `<option value="${v.id}">${v.placa} - ${v.modelo} (${v.tipo_suporte})</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Equipa Médica de Plantão:</label>
+                            <select id="teamSelect" class="form-control">
+                                ${resources.data.equipes.map(e => `<option value="${e.id}">${e.nome_equipe}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn-dispatch" onclick="dispatchAmbulance()">
+                        <i class="fa-solid fa-truck-fast"></i> ACIONAR VIATURA & INICIAR TRACKING
+                    </button>
+                </div>
+            `;
+        }
+
+        async function dispatchAmbulance() {
+            const payload = {
+                ocorrencia_id: currentOccurrenceId,
+                viatura_id: document.getElementById('vtrSelect').value,
+                equipe_id: document.getElementById('teamSelect').value
+            };
+
+            const res = await ApiClient.post('base.php?action=dispatch_ambulance', payload);
+            if (res.success) {
+                alert(res.message);
+                checkNewTasks();
+            } else {
+                alert(res.message);
+            }
         }
     </script>
 </body>
