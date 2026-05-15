@@ -51,7 +51,26 @@ if ($action === 'get_user_data') {
     if (!isset($_SESSION['user'])) {
         sendResponse(false, 'Não autenticado');
     }
-    sendResponse(true, 'Dados carregados', $_SESSION['user']);
+    
+    $tipo = $_SESSION['user']['tipo'];
+    $id = $_SESSION['user']['id'];
+    
+    if ($tipo === 'base') {
+        $stmt = $pdo->prepare("SELECT id, nome_base as nome, municipio, endereco, capacidade, email_institucional as email, data_criacao as data_cadastro FROM bases WHERE id = ?");
+        $stmt->execute([$id]);
+        $userData = $stmt->fetch();
+        if ($userData) $userData['tipo'] = 'base';
+    } else {
+        $stmt = $pdo->prepare("SELECT id, nome, email, telefone, tipo_usuario as tipo, data_cadastro FROM usuarios WHERE id = ?");
+        $stmt->execute([$id]);
+        $userData = $stmt->fetch();
+    }
+
+    if ($userData) {
+        sendResponse(true, 'Dados carregados', $userData);
+    } else {
+        sendResponse(false, 'Usuário não encontrado');
+    }
 }
 
 if ($action === 'logout') {

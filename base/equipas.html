@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA Base - Gestão de Equipas</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    
+    <style>
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+        .member-list { margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1rem; }
+        .member-tag { 
+            display: inline-block; background: #f0f2f5; padding: 0.25rem 0.75rem; 
+            border-radius: 2rem; font-size: 0.75rem; margin: 0.25rem; color: #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar sidebar-base">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-hospital" style="color: #10b981;"></i>
+                <span id="baseNameSidebar">Base INEMA</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fa-solid fa-bell"></i> Despacho
+                </a>
+                <a href="viaturas.html" class="nav-link">
+                    <i class="fa-solid fa-ambulance"></i> Frota
+                </a>
+                <a href="equipas.html" class="nav-link active">
+                    <i class="fa-solid fa-user-nurse"></i> Equipas
+                </a>
+                <a href="#" class="nav-link logout" id="btnLogout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 style="font-size: 1.1rem; font-weight: 800; color: #10b981;">Equipas de Emergência</h2>
+                <button class="btn-primary" onclick="openAddTeam()" style="background: #10b981;">
+                    <i class="fa-solid fa-plus"></i> Nova Equipa
+                </button>
+            </header>
+
+            <div class="content-wrapper">
+                <div id="teamGrid" class="team-grid">
+                    <!-- Carregado via API -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Adicionar/Editar -->
+    <div id="teamModal" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 500px; padding: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; color: #232c5f;">Registar Equipa</h3>
+            <form id="teamForm">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display:block; font-size: 0.8rem; font-weight: 700;">Nome da Equipa</label>
+                    <input type="text" id="team_nome" class="form-control" placeholder="Ex: Equipa Alfa / Noturno 1" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display:block; font-size: 0.8rem; font-weight: 700;">Membros (Nomes separados por vírgula)</label>
+                    <textarea id="team_membros" class="form-control" style="height: 100px;" placeholder="Dr. João, Enf. Maria, Mot. Carlos" required></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button type="button" onclick="closeModal()" style="flex: 1; padding: 0.75rem; border: none; border-radius: 0.5rem; cursor: pointer;">Cancelar</button>
+                    <button type="submit" style="flex: 1; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Salvar Equipa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await loadUserData();
+            if (user) {
+                document.getElementById('baseNameSidebar').textContent = user.nome;
+            }
+            loadTeams();
+
+            document.getElementById('btnLogout').addEventListener('click', async () => {
+                await ApiClient.get('auth.php?action=logout');
+                window.location.href = '../login.html';
+            });
+        });
+
+        async function loadTeams() {
+            const res = await ApiClient.get('base.php?action=get_my_teams');
+            const grid = document.getElementById('teamGrid');
+            
+            if (res.success) {
+                if (res.data.length === 0) {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 3rem;">Nenhuma equipa registada.</p>';
+                    return;
+                }
+
+                grid.innerHTML = res.data.map(team => `
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <h3 style="font-weight: 800; color: #232c5f;">${team.nome_equipe}</h3>
+                            <button onclick="deleteTeam(${team.id})" class="action-btn" style="color: #ef4444;"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div class="member-list">
+                            ${team.descricao_membros.split(',').map(m => `<span class="member-tag">${m.trim()}</span>`).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function openAddTeam() {
+            document.getElementById('teamForm').reset();
+            document.getElementById('teamModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('teamModal').style.display = 'none';
+        }
+
+        document.getElementById('teamForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                nome_equipe: document.getElementById('team_nome').value,
+                descricao_membros: document.getElementById('team_membros').value
+            };
+
+            const res = await ApiClient.post('base.php?action=register_team', payload);
+            if (res.success) {
+                closeModal();
+                loadTeams();
+            } else {
+                alert(res.message);
+            }
+        });
+
+        async function deleteTeam(id) {
+            if (!confirm('Eliminar esta equipa?')) return;
+            const res = await ApiClient.post('base.php?action=delete_team', { id });
+            if (res.success) loadTeams();
+        }
+    </script>
+</body>
+</html>

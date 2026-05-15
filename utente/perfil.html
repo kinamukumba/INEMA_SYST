@@ -158,7 +158,7 @@
                 <a href="perfil.html" class="nav-link active">
                     <i class="fa-solid fa-user"></i> O Meu Perfil
                 </a>
-                <a href="../login.html" class="nav-link logout">
+                <a href="#" class="nav-link logout" id="btnLogout">
                     <i class="fa-solid fa-right-from-bracket"></i> Sair
                 </a>
             </nav>
@@ -180,8 +180,8 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="profile-info-main">
-                        <h2>Kina Mukumba</h2>
-                        <p>Cidadão • Desde Abril 2026</p>
+                        <h2 id="profileName">Carregando...</h2>
+                        <p id="profileSub">Cidadão • Carregando data...</p>
                     </div>
                 </div>
 
@@ -192,30 +192,30 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
                             <div class="info-group">
                                 <label>Nome Completo</label>
-                                <p>Kina Mukumba</p>
+                                <p id="fullName">Carregando...</p>
                             </div>
                             <div class="info-group">
                                 <label>Nº de Telemóvel</label>
-                                <p>+244 931 917 997</p>
+                                <p id="phone">Carregando...</p>
                             </div>
                             <div class="info-group">
                                 <label>E-mail</label>
-                                <p>kina.mukumba@exemplo.ao</p>
+                                <p id="email">Carregando...</p>
                             </div>
                             <div class="info-group">
-                                <label>Localização Padrão</label>
-                                <p>Luanda, Maianga</p>
+                                <label>Membro desde</label>
+                                <p id="joinDate">Carregando...</p>
                             </div>
                         </div>
 
                         <h3 style="font-weight: 800; color: var(--primary-blue); margin: 2rem 0 1.5rem;">Resumo de Atividade</h3>
                         <div class="stats-summary">
                             <div class="stat-mini-card">
-                                <h3>14</h3>
+                                <h3 id="totalOccurrences">0</h3>
                                 <span>Ocorrências Totais</span>
                             </div>
                             <div class="stat-mini-card">
-                                <h3>432</h3>
+                                <h3 id="citizenPoints">0</h3>
                                 <span>Pontos de Cidadão</span>
                             </div>
                         </div>
@@ -223,28 +223,9 @@
 
                     <div class="card">
                         <h3 style="font-weight: 800; color: var(--primary-blue); margin-bottom: 1.5rem;">Histórico Recente</h3>
-                        <div class="history-list">
-                            <div class="history-item">
-                                <div class="history-meta">
-                                    <h4>Acidente de Viação</h4>
-                                    <span>Hoje, 14:20 • Av. Deolinda</span>
-                                </div>
-                                <span class="status-pill status-completed">Concluído</span>
-                            </div>
-                            <div class="history-item">
-                                <div class="history-meta">
-                                    <h4>Doença Súbita</h4>
-                                    <span>Ontem, 09:15 • Maianga</span>
-                                </div>
-                                <span class="status-pill status-completed">Concluído</span>
-                            </div>
-                            <div class="history-item">
-                                <div class="history-meta">
-                                    <h4>Queda Grave</h4>
-                                    <span>12 Abr, 18:30 • Viana</span>
-                                </div>
-                                <span class="status-pill status-completed">Concluído</span>
-                            </div>
+                        <div class="history-list" id="historyList">
+                            <!-- Carregado via API -->
+                            <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 2rem;">Carregando histórico...</p>
                         </div>
                         <button style="width: 100%; background: none; border: none; color: var(--primary-blue); font-weight: 700; font-size: 0.85rem; margin-top: 1.5rem; cursor: pointer;">Ver Todo o Histórico</button>
                     </div>
@@ -252,5 +233,71 @@
             </div>
         </main>
     </div>
+    <script src="../assets/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await loadUserData();
+            if (user) {
+                // Preencher dados básicos
+                document.getElementById('profileName').textContent = user.nome;
+                document.getElementById('fullName').textContent = user.nome;
+                document.getElementById('phone').textContent = user.telefone || 'Não informado';
+                document.getElementById('email').textContent = user.email;
+                
+                const joinDate = new Date(user.data_cadastro);
+                const joinStr = joinDate.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' });
+                document.getElementById('profileSub').textContent = `Cidadão • Desde ${joinStr}`;
+                document.getElementById('joinDate').textContent = joinDate.toLocaleDateString('pt-PT');
+
+                // Carregar estatísticas e histórico
+                loadStatsAndHistory();
+            }
+
+            document.getElementById('btnLogout').addEventListener('click', async (e) => {
+                e.preventDefault();
+                await ApiClient.get('auth.php?action=logout');
+                window.location.href = '../login.html';
+            });
+        });
+
+        async function loadStatsAndHistory() {
+            const res = await ApiClient.get('utente.php?action=get_profile_stats');
+            if (res.success) {
+                document.getElementById('totalOccurrences').textContent = res.data.total_ocorrencias;
+                document.getElementById('citizenPoints').textContent = res.data.pontos;
+
+                const historyList = document.getElementById('historyList');
+                if (res.data.historico.length === 0) {
+                    historyList.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 2rem;">Nenhuma ocorrência registada.</p>';
+                    return;
+                }
+
+                historyList.innerHTML = res.data.historico.map(occ => {
+                    const date = new Date(occ.data_abertura).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                    return `
+                        <div class="history-item">
+                            <div class="history-meta">
+                                <h4>${occ.nome_categoria}</h4>
+                                <span>${date} • ${occ.localizacao_texto}</span>
+                            </div>
+                            <span class="status-pill status-completed" style="background-color: ${getStatusColor(occ.status)}; color: white;">
+                                ${occ.status.toUpperCase()}
+                            </span>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case 'concluida': return '#2e7d32';
+                case 'rejeitada':
+                case 'cancelada': return '#c62828';
+                case 'pendente': return '#f9a825';
+                default: return '#1565c0';
+            }
+        }
+    </script>
 </body>
 </html>

@@ -143,29 +143,42 @@
                     </div>
                     <p>Adicione um novo polo do INEMA ao sistema para alocação de equipas e viaturas médicas.</p>
 
-                    <form>
+                    <div id="errorMessage" style="display:none; background: #fef2f2; color: #ef4444; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem; font-size: 0.85rem; font-weight: 600; text-align: center;"></div>
+                    <div id="successMessage" style="display:none; background: #e8f5e9; color: #2e7d32; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem; font-size: 0.85rem; font-weight: 600; text-align: center;"></div>
+
+                    <form id="registerBaseForm">
                         <div class="form-group">
                             <label>Nome Oficial da Base *</label>
-                            <input type="text" class="form-control" placeholder="Ex: Base INEMA Mutamba">
+                            <input type="text" id="nome_base" class="form-control" placeholder="Ex: Base INEMA Mutamba" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>E-mail Institucional *</label>
+                            <input type="email" id="email_institucional" class="form-control" placeholder="base.mutamba@inema.ao" required>
                         </div>
 
                         <div class="form-group">
                             <label>Endereço Completo *</label>
-                            <input type="text" class="form-control" placeholder="Rua, Bairro, Ponto de Referência">
+                            <input type="text" id="endereco" class="form-control" placeholder="Rua, Bairro, Ponto de Referência" required>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Município *</label>
-                                <input type="text" class="form-control" placeholder="Ex: Luanda, Talatona, Viana">
+                                <input type="text" id="municipio" class="form-control" placeholder="Ex: Luanda, Talatona, Viana" required>
                             </div>
                             <div class="form-group">
                                 <label>Capacidade (Máx. Viaturas) *</label>
-                                <input type="text" class="form-control" placeholder="Ex: 5">
+                                <input type="number" id="capacidade" class="form-control" placeholder="Ex: 5" required>
                             </div>
                         </div>
 
-                        <button type="button" class="btn-submit">
+                        <div class="form-group">
+                            <label>Palavra-passe (Padrão para a Base) *</label>
+                            <input type="text" id="password" class="form-control" value="123456" required>
+                        </div>
+
+                        <button type="submit" class="btn-submit" id="btnSubmit">
                             <i class="fa-solid fa-plus"></i> Guardar Polo INEMA
                         </button>
                     </form>
@@ -173,5 +186,54 @@
             </div>
         </main>
     </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await loadUserData();
+            if (user) {
+                document.getElementById('adminName').textContent = user.nome;
+            }
+        });
+
+        document.getElementById('registerBaseForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('btnSubmit');
+            const errorEl = document.getElementById('errorMessage');
+            const successEl = document.getElementById('successMessage');
+            
+            errorEl.style.display = 'none';
+            successEl.style.display = 'none';
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Registando...';
+
+            const payload = {
+                nome_base: document.getElementById('nome_base').value,
+                email_institucional: document.getElementById('email_institucional').value,
+                municipio: document.getElementById('municipio').value,
+                endereco: document.getElementById('endereco').value,
+                capacidade: document.getElementById('capacidade').value,
+                password: document.getElementById('password').value
+            };
+
+            const res = await ApiClient.post('admin.php?action=register_base', payload);
+
+            if (res.success) {
+                successEl.textContent = res.message;
+                successEl.style.display = 'block';
+                document.getElementById('registerBaseForm').reset();
+                document.getElementById('password').value = '123456';
+                setTimeout(() => {
+                    window.location.href = 'gestao_bases.html';
+                }, 2000);
+            } else {
+                errorEl.textContent = res.message;
+                errorEl.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-plus"></i> Guardar Polo INEMA';
+            }
+        });
+    </script>
 </body>
 </html>

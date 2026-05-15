@@ -111,19 +111,52 @@
         <h1>Central INEMA</h1>
         <p class="subtitle">Acesso exclusivo para Administradores</p>
 
-        <form action="dashboard.html" method="GET">
+        <div id="errorMessage" style="display:none; background: #fef2f2; color: #ef4444; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; font-size: 0.85rem; font-weight: 600; text-align: center;"></div>
+
+        <form id="adminLoginForm">
             <div class="form-group">
                 <label>E-mail Institucional</label>
-                <input type="email" class="form-control" placeholder="moises.admin@inema.ao" required>
+                <input type="email" id="email" class="form-control" placeholder="moises.admin@inema.ao" required>
             </div>
 
             <div class="form-group">
                 <label>Palavra-passe</label>
-                <input type="password" class="form-control" placeholder="••••••••" required>
+                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
             </div>
 
-            <button type="submit" class="btn-login">Aceder à Central</button>
+            <button type="submit" class="btn-login" id="btnLogin">Aceder à Central</button>
         </form>
     </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('btnLogin');
+            const errorEl = document.getElementById('errorMessage');
+            
+            errorEl.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = 'Autenticando...';
+
+            const credentials = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                login_type: 'utente' // Admins estão na tabela usuarios, o backend diferencia pelo tipo_usuario
+            };
+
+            const res = await ApiClient.post('auth.php?action=login', credentials);
+
+            if (res.success && res.data.redirect === 'admin') {
+                window.location.href = 'dashboard.html';
+            } else {
+                errorEl.textContent = res.success ? 'Acesso negado: Não é um administrador.' : res.message;
+                errorEl.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Aceder à Central';
+            }
+        });
+    </script>
 </body>
 </html>

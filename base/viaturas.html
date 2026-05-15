@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA Base - Gestão de Frota</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    
+    <style>
+        .vtr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .vtr-card { border-left: 5px solid #10b981; }
+        .vtr-card.em_missao { border-left-color: #3b82f6; }
+        .vtr-card.manutencao { border-left-color: #ef4444; }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+        }
+        .status-disponivel { background: #dcfce7; color: #166534; }
+        .status-em_missao { background: #dbeafe; color: #1e40af; }
+        .status-manutencao { background: #fef2f2; color: #991b1b; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar sidebar-base">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-hospital" style="color: #10b981;"></i>
+                <span id="baseNameSidebar">Base INEMA</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fa-solid fa-bell"></i> Despacho
+                </a>
+                <a href="viaturas.html" class="nav-link active">
+                    <i class="fa-solid fa-ambulance"></i> Frota
+                </a>
+                <a href="equipas.html" class="nav-link">
+                    <i class="fa-solid fa-user-nurse"></i> Equipas
+                </a>
+                <a href="#" class="nav-link logout" id="btnLogout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 style="font-size: 1.1rem; font-weight: 800; color: #10b981;">Gestão da Frota Local</h2>
+                <button class="btn-primary" onclick="openAddVtr()" style="background: #10b981;">
+                    <i class="fa-solid fa-plus"></i> Adicionar Viatura
+                </button>
+            </header>
+
+            <div class="content-wrapper">
+                <div id="vtrGrid" class="vtr-grid">
+                    <!-- Carregado via API -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Adicionar/Editar -->
+    <div id="vtrModal" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 500px; padding: 2rem;">
+            <h3 id="modalTitle" style="margin-bottom: 1.5rem; color: #232c5f;">Nova Viatura</h3>
+            <form id="vtrForm">
+                <input type="hidden" id="vtr_id">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display:block; font-size: 0.8rem; font-weight: 700;">Placa (Matrícula)</label>
+                    <input type="text" id="vtr_placa" class="form-control" placeholder="LD-00-00-XX" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display:block; font-size: 0.8rem; font-weight: 700;">Modelo</label>
+                    <input type="text" id="vtr_modelo" class="form-control" placeholder="Toyota Land Cruiser / Mercedes" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display:block; font-size: 0.8rem; font-weight: 700;">Tipo de Suporte</label>
+                    <select id="vtr_tipo" class="form-control">
+                        <option value="basico">Suporte Básico</option>
+                        <option value="medio">Suporte Médio</option>
+                        <option value="avancado">Suporte Avançado</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button type="button" onclick="closeModal()" style="flex: 1; padding: 0.75rem; border: none; border-radius: 0.5rem; cursor: pointer;">Cancelar</button>
+                    <button type="submit" style="flex: 1; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await loadUserData();
+            if (user) {
+                document.getElementById('baseNameSidebar').textContent = user.nome;
+            }
+            loadFleet();
+
+            document.getElementById('btnLogout').addEventListener('click', async () => {
+                await ApiClient.get('auth.php?action=logout');
+                window.location.href = '../login.html';
+            });
+        });
+
+        async function loadFleet() {
+            const res = await ApiClient.get('base.php?action=get_my_fleet');
+            const grid = document.getElementById('vtrGrid');
+            
+            if (res.success) {
+                if (res.data.length === 0) {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 3rem;">Nenhuma viatura registada nesta base.</p>';
+                    return;
+                }
+
+                grid.innerHTML = res.data.map(vtr => `
+                    <div class="card vtr-card ${vtr.status_vtr}">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                            <div>
+                                <h3 style="font-weight: 800; color: #232c5f;">${vtr.placa}</h3>
+                                <p style="font-size: 0.85rem; color: #8c909c;">${vtr.modelo}</p>
+                            </div>
+                            <span class="status-badge status-${vtr.status_vtr}">${vtr.status_vtr.replace('_', ' ')}</span>
+                        </div>
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 1.5rem;">
+                            <i class="fa-solid fa-briefcase-medical"></i> ${vtr.tipo_suporte.toUpperCase()}
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button onclick="updateStatus(${vtr.id}, 'disponivel')" class="action-btn" title="Disponível" style="color: #10b981;"><i class="fa-solid fa-check"></i></button>
+                            <button onclick="updateStatus(${vtr.id}, 'manutencao')" class="action-btn" title="Manutenção" style="color: #ef4444;"><i class="fa-solid fa-wrench"></i></button>
+                            <button onclick="deleteVtr(${vtr.id})" class="action-btn" title="Eliminar" style="margin-left: auto;"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function openAddVtr() {
+            document.getElementById('vtr_id').value = '';
+            document.getElementById('vtrForm').reset();
+            document.getElementById('modalTitle').textContent = 'Nova Viatura';
+            document.getElementById('vtrModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('vtrModal').style.display = 'none';
+        }
+
+        document.getElementById('vtrForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                placa: document.getElementById('vtr_placa').value,
+                modelo: document.getElementById('vtr_modelo').value,
+                tipo_suporte: document.getElementById('vtr_tipo').value
+            };
+
+            const res = await ApiClient.post('base.php?action=register_vehicle', payload);
+            if (res.success) {
+                closeModal();
+                loadFleet();
+            } else {
+                alert(res.message);
+            }
+        });
+
+        async function updateStatus(id, status) {
+            const res = await ApiClient.post('base.php?action=update_vehicle_status', { id, status });
+            if (res.success) loadFleet();
+        }
+
+        async function deleteVtr(id) {
+            if (!confirm('Eliminar esta viatura?')) return;
+            const res = await ApiClient.post('base.php?action=delete_vehicle', { id });
+            if (res.success) loadFleet();
+        }
+    </script>
+</body>
+</html>

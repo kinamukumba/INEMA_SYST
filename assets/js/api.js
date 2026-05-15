@@ -36,8 +36,17 @@ async function loadUserData() {
         return res.data;
     } else {
         // Se não estiver logado e estiver em uma página restrita, redirecionar
-        if (!window.location.pathname.includes('login.html') && !window.location.pathname.includes('register.html') && window.location.pathname !== '/tcc/') {
-            window.location.href = '/tcc/login.html';
+        const path = window.location.pathname;
+        const isPublic = path.includes('login.html') || path.includes('register.html') || path === '/tcc/' || path.endsWith('/admin/') || path.endsWith('/base/') || path.endsWith('/admin/index.html') || path.endsWith('/base/index.html');
+        
+        if (!isPublic) {
+            if (path.includes('/admin/')) {
+                window.location.href = '/tcc/admin/index.html';
+            } else if (path.includes('/base/')) {
+                window.location.href = '/tcc/base/index.html';
+            } else {
+                window.location.href = '/tcc/login.html';
+            }
         }
     }
 }

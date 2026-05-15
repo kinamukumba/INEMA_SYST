@@ -66,6 +66,21 @@
         </aside>
 
         <main class="main-content">
+            <header class="top-bar">
+                <div class="greeting">
+                    <h2 style="font-size: 1.1rem; font-weight: 700;">Nova Solicitação</h2>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.85rem; font-weight: 800; color: var(--primary-blue);" id="userFullName">Carregando...</p>
+                        <p style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Cidadão</p>
+                    </div>
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+            </header>
+
             <div class="content-wrapper">
                 <div class="step-container">
                     <!-- Step 1: Categoria -->
@@ -128,7 +143,10 @@
         let selectedCategoryId = null;
 
         document.addEventListener('DOMContentLoaded', async () => {
-            await loadUserData();
+            const user = await loadUserData();
+            if (user) {
+                document.getElementById('userFullName').textContent = user.nome;
+            }
             loadCategories();
         });
 

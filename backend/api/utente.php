@@ -35,9 +35,13 @@ if ($action === 'submit_sos') {
 
 if ($action === 'get_active_occurrence') {
     $stmt = $pdo->prepare("
-        SELECT o.*, c.nome_categoria 
+        SELECT o.*, c.nome_categoria, b.nome_base, b.municipio as base_municipio,
+               v.placa as vtr_placa, v.modelo as vtr_modelo
         FROM ocorrencias o 
         JOIN categorias_ocorrencia c ON o.categoria_id = c.id 
+        LEFT JOIN bases b ON o.base_atribuida_id = b.id
+        LEFT JOIN atendimentos a ON a.ocorrencia_id = o.id
+        LEFT JOIN viaturas v ON a.viatura_id = v.id
         WHERE o.utente_id = ? AND o.status NOT IN ('concluida', 'cancelada', 'rejeitada') 
         ORDER BY o.data_abertura DESC LIMIT 1
     ");
@@ -55,5 +59,28 @@ if ($action === 'get_categories') {
     $stmt = $pdo->query("SELECT id, nome_categoria FROM categorias_ocorrencia");
     $categories = $stmt->fetchAll();
     sendResponse(true, 'Categorias carregadas', $categories);
+}
+if ($action === 'get_profile_stats') {
+    $stmt1 = $pdo->prepare("SELECT COUNT(*) FROM ocorrencias WHERE utente_id = ?");
+    $stmt1->execute([$user_id]);
+    $total_occ = $stmt1->fetchColumn();
+
+    $stmt2 = $pdo->prepare("
+        SELECT o.id, c.nome_categoria, o.data_abertura, o.localizacao_texto, o.status
+        FROM ocorrencias o
+        JOIN categorias_ocorrencia c ON o.categoria_id = c.id
+        WHERE o.utente_id = ?
+        ORDER BY o.data_abertura DESC LIMIT 10
+    ");
+    $stmt2->execute([$user_id]);
+    $history = $stmt2->fetchAll();
+
+    $points = $total_occ * 50 + 100;
+
+    sendResponse(true, 'Estatísticas carregadas', [
+        'total_ocorrencias' => $total_occ,
+        'pontos' => $points,
+        'historico' => $history
+    ]);
 }
 ?>

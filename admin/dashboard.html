@@ -128,7 +128,7 @@
                 <h2 style="font-size: 1.1rem; font-weight: 800; color: #232c5f;">Triagem de Emergências</h2>
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <div style="text-align: right;">
-                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;">Admin Moisés</p>
+                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;" id="adminName">Carregando...</p>
                         <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c; text-transform: uppercase;">Administrador</p>
                     </div>
                     <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #8c909c;"><i class="fa-solid fa-user"></i></div>
@@ -138,64 +138,128 @@
             <div class="content-wrapper">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                     <h3 style="font-weight: 800; color: #232c5f;">Ocorrências Aguardando Triagem</h3>
-                    <span style="background: #ef4444; color: white; padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 800;">2 URGENTES</span>
+                    <span id="urgentCount" style="display:none; background: #ef4444; color: white; padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 800;">0 URGENTES</span>
                 </div>
 
-                <div class="triage-grid">
-                    <div class="card triage-card">
-                        <span class="occ-id">#1044</span>
-                        <div class="occ-type">
-                            <i class="fa-solid fa-car-burst" style="color: #ef4444;"></i>
-                            Acidente de Viação
-                        </div>
-                        <div class="occ-meta">
-                            <span><i class="fa-solid fa-user"></i> Kina Mukumba</span>
-                            <span><i class="fa-solid fa-location-dot"></i> Av. Deolinda Rodrigues, Palanca</span>
-                            <span><i class="fa-solid fa-clock"></i> Há 2 minutos</span>
-                        </div>
-                        <p style="font-size: 0.85rem; color: #475569; line-height: 1.5;">Vítima inconsciente presa nas ferragens. Necessário desencarceramento.</p>
-                        
-                        <div class="action-group">
-                            <button class="btn-reject">Rejeitar</button>
-                            <button class="btn-approve" onclick="approve(this)">Aprovar e Redirecionar</button>
-                        </div>
-                    </div>
-
-                    <div class="card triage-card">
-                        <span class="occ-id">#1045</span>
-                        <div class="occ-type">
-                            <i class="fa-solid fa-heart-pulse" style="color: #ef4444;"></i>
-                            Paragem Cardio-respiratória
-                        </div>
-                        <div class="occ-meta">
-                            <span><i class="fa-solid fa-user"></i> João Silva</span>
-                            <span><i class="fa-solid fa-location-dot"></i> Rua Direita da Samba</span>
-                            <span><i class="fa-solid fa-clock"></i> Há 5 minutos</span>
-                        </div>
-                        <p style="font-size: 0.85rem; color: #475569; line-height: 1.5;">Idoso de 70 anos, sem pulso. Reanimação em curso por familiares.</p>
-                        
-                        <div class="action-group">
-                            <button class="btn-reject">Rejeitar</button>
-                            <button class="btn-approve" onclick="approve(this)">Aprovar e Redirecionar</button>
-                        </div>
-                    </div>
+                <div class="triage-grid" id="triageGrid">
+                    <!-- Carregado via API -->
+                    <p style="text-align: center; color: #8c909c; padding: 3rem; grid-column: 1/-1;">Buscando novas ocorrências...</p>
                 </div>
             </div>
         </main>
     </div>
 
+    <script src="../assets/js/api.js"></script>
     <script>
-        function approve(btn) {
-            const card = btn.closest('.triage-card');
-            card.classList.add('approved');
-            btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Redirecionado';
-            btn.style.backgroundColor = '#10b981';
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await loadUserData();
+            if (user) {
+                document.getElementById('adminName').textContent = user.nome;
+            }
             
-            setTimeout(() => {
+            loadPendingOccurrences();
+            
+            // Atualizar a cada 15 segundos
+            setInterval(loadPendingOccurrences, 15000);
+        });
+
+        async function loadPendingOccurrences() {
+            const res = await ApiClient.get('admin.php?action=get_pending_occurrences');
+            const grid = document.getElementById('triageGrid');
+            const urgentBadge = document.getElementById('urgentCount');
+            
+            // Buscar bases para o select
+            const basesRes = await ApiClient.get('admin.php?action=get_bases');
+            const bases = basesRes.success ? basesRes.data : [];
+
+            if (res.success) {
+                if (res.data.length === 0) {
+                    grid.innerHTML = '<p style="text-align: center; color: #8c909c; padding: 3rem; grid-column: 1/-1;">Nenhuma ocorrência pendente no momento.</p>';
+                    urgentBadge.style.display = 'none';
+                    return;
+                }
+
+                urgentBadge.textContent = `${res.data.length} PENDENTES`;
+                urgentBadge.style.display = 'block';
+
+                grid.innerHTML = res.data.map(occ => `
+                    <div class="card triage-card" id="occ-${occ.id}">
+                        <span class="occ-id">#${occ.id}</span>
+                        <div class="occ-type">
+                            <i class="fa-solid fa-truck-medical" style="color: #ef4444;"></i>
+                            ${occ.nome_categoria}
+                        </div>
+                        <div class="occ-meta">
+                            <span><i class="fa-solid fa-user"></i> ${occ.utente_nome}</span>
+                            <span><i class="fa-solid fa-location-dot"></i> ${occ.localizacao_texto}</span>
+                            <span><i class="fa-solid fa-clock"></i> ${new Date(occ.data_abertura).toLocaleTimeString()}</span>
+                        </div>
+                        
+                        <div style="margin: 1rem 0;">
+                            <label style="font-size: 0.75rem; font-weight: 700; color: #232c5f; display: block; margin-bottom: 0.5rem;">Direcionar para Base:</label>
+                            <select class="form-control base-select" id="base-select-${occ.id}" style="padding: 0.5rem; font-size: 0.8rem;">
+                                ${bases.map(b => `<option value="${b.id}">${b.nome_base} (${b.municipio})</option>`).join('')}
+                            </select>
+                        </div>
+
+                        <div class="action-group">
+                            <button class="btn-reject" onclick="reject(${occ.id})">Rejeitar</button>
+                            <button class="btn-approve" onclick="approve(${occ.id}, this)">Aprovar e Enviar</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function approve(id, btn) {
+            const baseId = document.getElementById(`base-select-${id}`).value;
+            if (!baseId) {
+                alert('Por favor, selecione uma base.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Processando...';
+            
+            const res = await ApiClient.post('admin.php?action=approve_occurrence', { 
+                id: id,
+                base_id: baseId
+            });
+            
+            if (res.success) {
+                const card = document.getElementById(`occ-${id}`);
+                card.classList.add('approved');
+                btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Enviado';
+                btn.style.backgroundColor = '#10b981';
+                
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateX(100px)';
+                    setTimeout(() => {
+                        card.remove();
+                        if (document.querySelectorAll('.triage-card').length === 0) {
+                            document.getElementById('triageGrid').innerHTML = '<p style="text-align: center; color: #8c909c; padding: 3rem; grid-column: 1/-1;">Nenhuma ocorrência pendente no momento.</p>';
+                        }
+                    }, 500);
+                }, 1000);
+            } else {
+                alert(res.message);
+                btn.disabled = false;
+                btn.textContent = 'Aprovar e Enviar';
+            }
+        }
+
+        async function reject(id) {
+            if (!confirm('Tem certeza que deseja rejeitar esta ocorrência?')) return;
+            
+            const res = await ApiClient.post('admin.php?action=reject_occurrence', { id: id });
+            if (res.success) {
+                const card = document.getElementById(`occ-${id}`);
                 card.style.opacity = '0';
-                card.style.transform = 'translateX(100px)';
                 setTimeout(() => card.remove(), 500);
-            }, 1000);
+            } else {
+                alert(res.message);
+            }
         }
     </script>
 </body>

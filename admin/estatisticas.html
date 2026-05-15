@@ -130,7 +130,7 @@
                 <h2 style="font-size: 1.1rem; font-weight: 800; color: #232c5f;">Estatísticas Gerais</h2>
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <div style="text-align: right;">
-                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;">Admin Moisés</p>
+                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;" id="adminName">Carregando...</p>
                         <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c; text-transform: uppercase;">Administrador</p>
                     </div>
                     <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #8c909c;"><i class="fa-solid fa-user"></i></div>
@@ -138,20 +138,20 @@
             </header>
 
             <div class="content-wrapper">
-                <h1 style="text-align: center; color: #232c5f; font-weight: 800; margin-bottom: 2rem;">Dashboard</h1>
+                <h1 style="text-align: center; color: #232c5f; font-weight: 800; margin-bottom: 2rem;">Dashboard Geral</h1>
                 
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h3>Total de Ocorrências</h3>
-                        <h2>3</h2>
+                        <h2 id="totalOccurrences">0</h2>
                     </div>
                     <div class="stat-card">
                         <h3>Respostas Apresentadas</h3>
-                        <h2>0</h2>
+                        <h2 id="responsesCount">0</h2>
                     </div>
                     <div class="stat-card">
                         <h3>Bases em Operação</h3>
-                        <h2>1</h2>
+                        <h2 id="totalBases">0</h2>
                     </div>
                 </div>
 
@@ -161,28 +161,9 @@
                             <h3 style="font-weight: 800; color: #232c5f;">Últimas Ocorrências Registradas</h3>
                             <span style="font-size: 0.8rem; font-weight: 700; color: #8c909c;">Estado</span>
                         </div>
-                        <div class="recent-list">
-                            <div class="recent-item">
-                                <div class="recent-info" style="border-left: 4px solid #10b981; padding-left: 1rem;">
-                                    <h4>Acidente de Viação</h4>
-                                    <p>Simulado na View • 19/04/2026</p>
-                                </div>
-                                <span class="status-tag">Despachado</span>
-                            </div>
-                            <div class="recent-item">
-                                <div class="recent-info" style="border-left: 4px solid #10b981; padding-left: 1rem;">
-                                    <h4>Afogamento</h4>
-                                    <p>Simulado na View • 19/04/2026</p>
-                                </div>
-                                <span class="status-tag">Despachado</span>
-                            </div>
-                            <div class="recent-item">
-                                <div class="recent-info" style="border-left: 4px solid #10b981; padding-left: 1rem;">
-                                    <h4>Dores no Peito / Coração</h4>
-                                    <p>Simulado na View • 19/04/2026</p>
-                                </div>
-                                <span class="status-tag">Despachado</span>
-                            </div>
+                        <div class="recent-list" id="recentOccurrencesList">
+                            <!-- Carregado via API -->
+                            <p style="text-align: center; color: #8c909c; padding: 2rem;">Carregando ocorrências recentes...</p>
                         </div>
                     </div>
 
@@ -190,7 +171,7 @@
                         <h3 style="font-weight: 800; color: #232c5f; margin-bottom: 1.5rem;">Balanço mensal de ocorrências</h3>
                         <div class="chart-placeholder">
                             <div class="line-graph">
-                                <!-- Simulação visual do gráfico da imagem -->
+                                <!-- Visual simulado -->
                                 <div class="graph-point" style="bottom: 10px;"></div>
                                 <div class="graph-point" style="bottom: 10px;"></div>
                                 <div class="graph-point" style="bottom: 10px;"></div>
@@ -206,5 +187,61 @@
             </div>
         </main>
     </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await loadUserData();
+            if (user) {
+                document.getElementById('adminName').textContent = user.nome;
+            }
+            
+            loadDashboardData();
+        });
+
+        async function loadDashboardData() {
+            // Carregar estatísticas
+            const statsRes = await ApiClient.get('admin.php?action=get_stats');
+            if (statsRes.success) {
+                document.getElementById('totalOccurrences').textContent = statsRes.data.total_ocorrencias;
+                document.getElementById('responsesCount').textContent = statsRes.data.respostas;
+                document.getElementById('totalBases').textContent = statsRes.data.total_bases;
+            }
+
+            // Carregar ocorrências recentes para o painel
+            const occRes = await ApiClient.get('admin.php?action=get_all_occurrences');
+            if (occRes.success) {
+                const list = document.getElementById('recentOccurrencesList');
+                const last5 = occRes.data.slice(0, 5);
+                
+                if (last5.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: #8c909c; padding: 2rem;">Nenhuma ocorrência registada.</p>';
+                    return;
+                }
+
+                list.innerHTML = last5.map(occ => `
+                    <div class="recent-item">
+                        <div class="recent-info" style="border-left: 4px solid ${getStatusColor(occ.status)}; padding-left: 1rem;">
+                            <h4>${occ.nome_categoria}</h4>
+                            <p>${occ.localizacao_texto} • ${new Date(occ.data_abertura).toLocaleDateString('pt-PT')}</p>
+                        </div>
+                        <span class="status-tag" style="background-color: ${getStatusColor(occ.status)}; color: white;">
+                            ${occ.status.toUpperCase()}
+                        </span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case 'concluida': return '#10b981';
+                case 'aprovada': return '#3b82f6';
+                case 'rejeitada': return '#ef4444';
+                case 'despachada': return '#f59e0b';
+                default: return '#8c909c';
+            }
+        }
+    </script>
 </body>
 </html>

@@ -74,7 +74,7 @@
                 <h2 style="font-size: 1.1rem; font-weight: 800; color: #232c5f;">Gestão e Edição de Bases</h2>
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <div style="text-align: right;">
-                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;">Admin Moisés</p>
+                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;" id="adminName">Carregando...</p>
                         <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c; text-transform: uppercase;">Administrador</p>
                     </div>
                     <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #8c909c;"><i class="fa-solid fa-user"></i></div>
@@ -82,6 +82,8 @@
             </header>
 
             <div class="content-wrapper">
+                <div id="statusMessage" style="display:none; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem; font-size: 0.85rem; font-weight: 600; text-align: center;"></div>
+                
                 <div class="card table-card">
                     <div class="card-header-icon">
                         <i class="fa-solid fa-building-user"></i>
@@ -92,29 +94,159 @@
                         <thead>
                             <tr>
                                 <th>Nome da Base</th>
-                                <th>Município</th>
-                                <th>Endereço</th>
-                                <th style="text-align: center;">Capacidade (Vias.)</th>
-                                <th style="text-align: center;">Ocorrências Processadas</th>
-                                <th style="text-align: center;">Credenciais</th>
+                                <th>Província/Município</th>
+                                <th>E-mail Institucional</th>
+                                <th style="text-align: center;">Viaturas</th>
+                                <th style="text-align: center;">Ocorrências</th>
                                 <th style="text-align: center;">Ações</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Popula</td>
-                                <td>Belas</td>
-                                <td>Luanda</td>
-                                <td style="text-align: center; color: #3b82f6;">1</td>
-                                <td style="text-align: center;"><span class="stat-badge">0 Atendimentos</span></td>
-                                <td style="text-align: center;"><button class="action-btn"><i class="fa-solid fa-eye"></i></button></td>
-                                <td style="text-align: center;"><button class="action-btn"><i class="fa-solid fa-pen"></i></button></td>
-                            </tr>
+                        <tbody id="basesTableBody">
+                            <!-- Carregado via API -->
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            <!-- Modal de Edição -->
+            <div id="editModal" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+                <div class="card" style="width: 100%; max-width: 500px; padding: 2rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: #232c5f;">Editar Base</h3>
+                    <form id="editBaseForm">
+                        <input type="hidden" id="edit_id">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label style="display:block; font-size: 0.8rem; font-weight: 700;">Nome da Base</label>
+                                <input type="text" id="edit_nome" class="form-control" style="width: 100%; padding: 0.5rem;" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label style="display:block; font-size: 0.8rem; font-weight: 700;">Email</label>
+                                <input type="email" id="edit_email" class="form-control" style="width: 100%; padding: 0.5rem;" required>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label style="display:block; font-size: 0.8rem; font-weight: 700;">Município</label>
+                                <input type="text" id="edit_municipio" class="form-control" style="width: 100%; padding: 0.5rem;" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label style="display:block; font-size: 0.8rem; font-weight: 700;">Capacidade</label>
+                                <input type="number" id="edit_capacidade" class="form-control" style="width: 100%; padding: 0.5rem;" required>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label style="display:block; font-size: 0.8rem; font-weight: 700;">Endereço</label>
+                            <input type="text" id="edit_endereco" class="form-control" style="width: 100%; padding: 0.5rem;" required>
+                        </div>
+                        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                            <button type="button" onclick="closeModal()" style="flex: 1; padding: 0.75rem; border: none; border-radius: 0.5rem; cursor: pointer;">Cancelar</button>
+                            <button type="submit" style="flex: 1; padding: 0.75rem; background: #232c5f; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </main>
     </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script>
+        let allBases = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await loadUserData();
+            if (user) {
+                document.getElementById('adminName').textContent = user.nome;
+            }
+            loadBases();
+        });
+
+        async function loadBases() {
+            const res = await ApiClient.get('admin.php?action=get_bases');
+            const tbody = document.getElementById('basesTableBody');
+            
+            if (res.success) {
+                allBases = res.data;
+                if (res.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">Nenhuma base cadastrada.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = res.data.map(base => `
+                    <tr>
+                        <td>${base.nome_base}</td>
+                        <td>${base.municipio}</td>
+                        <td>${base.email_institucional}</td>
+                        <td style="text-align: center; color: #3b82f6;">${base.total_viaturas}</td>
+                        <td style="text-align: center;">
+                            <span class="stat-badge">${base.total_processadas} Atendimentos</span>
+                        </td>
+                        <td style="text-align: center;">
+                            <button class="action-btn" onclick="openEdit(${base.id})" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button class="action-btn" onclick="deleteBase(${base.id})" title="Eliminar" style="margin-left: 0.5rem; color: #ef4444;"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function openEdit(id) {
+            const base = allBases.find(b => b.id == id);
+            if (base) {
+                document.getElementById('edit_id').value = base.id;
+                document.getElementById('edit_nome').value = base.nome_base;
+                document.getElementById('edit_email').value = base.email_institucional;
+                document.getElementById('edit_municipio').value = base.municipio;
+                document.getElementById('edit_endereco').value = base.endereco;
+                document.getElementById('edit_capacidade').value = base.capacidade;
+                document.getElementById('editModal').style.display = 'flex';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        document.getElementById('editBaseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                id: document.getElementById('edit_id').value,
+                nome_base: document.getElementById('edit_nome').value,
+                email_institucional: document.getElementById('edit_email').value,
+                municipio: document.getElementById('edit_municipio').value,
+                endereco: document.getElementById('edit_endereco').value,
+                capacidade: document.getElementById('edit_capacidade').value
+            };
+
+            const res = await ApiClient.post('admin.php?action=update_base', payload);
+            if (res.success) {
+                showMessage(res.message, 'success');
+                closeModal();
+                loadBases();
+            } else {
+                alert(res.message);
+            }
+        });
+
+        async function deleteBase(id) {
+            if (!confirm('Tem certeza que deseja eliminar esta base?')) return;
+
+            const res = await ApiClient.post('admin.php?action=delete_base', { id: id });
+            if (res.success) {
+                showMessage(res.message, 'success');
+                loadBases();
+            } else {
+                showMessage(res.message, 'error');
+            }
+        }
+
+        function showMessage(msg, type) {
+            const el = document.getElementById('statusMessage');
+            el.textContent = msg;
+            el.style.display = 'block';
+            el.style.background = type === 'success' ? '#e8f5e9' : '#fef2f2';
+            el.style.color = type === 'success' ? '#2e7d32' : '#ef4444';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+    </script>
 </body>
 </html>

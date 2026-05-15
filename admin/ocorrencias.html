@@ -156,7 +156,7 @@
                 <h2 style="font-size: 1.1rem; font-weight: 800; color: #232c5f;">Gestão de Ocorrências</h2>
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <div style="text-align: right;">
-                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;">Admin Moisés</p>
+                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;" id="adminName">Carregando...</p>
                         <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c; text-transform: uppercase;">Administrador</p>
                     </div>
                     <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #8c909c;"><i class="fa-solid fa-user"></i></div>
@@ -177,82 +177,83 @@
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td class="user-cell">
-                                    <h4>Kina Mukumba</h4>
-                                    <p>ID: #3 • +244928775029</p>
-                                </td>
-                                <td class="date-cell">19/04/26, 17:16</td>
-                                <td class="cat-cell cat-red">Acidente de Viação</td>
-                                <td class="loc-cell">
-                                    <h5>Simulado na View</h5>
-                                    <p>Palanca</p>
-                                </td>
-                                <td class="base-cell">Popula</td>
-                                <td>
-                                    <span class="status-badge">DESPACHADO</span>
-                                    <select class="status-select">
-                                        <option>Despachado</option>
-                                        <option>Concluído</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="user-cell">
-                                    <h4>Kina Mukumba</h4>
-                                    <p>ID: #2 • +244928775029</p>
-                                </td>
-                                <td class="date-cell">19/04/26, 16:37</td>
-                                <td class="cat-cell cat-blue">Afogamento</td>
-                                <td class="loc-cell">
-                                    <h5>Simulado na View</h5>
-                                    <p>Maianga</p>
-                                </td>
-                                <td class="base-cell no-base">Não Alocada</td>
-                                <td>
-                                    <span class="status-badge">DESPACHADO</span>
-                                    <select class="status-select">
-                                        <option>Despachado</option>
-                                        <option>Pendente</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="user-cell">
-                                    <h4>Kina Mukumba</h4>
-                                    <p>ID: #1 • +244928775029</p>
-                                </td>
-                                <td class="date-cell">19/04/26, 15:40</td>
-                                <td class="cat-cell cat-red">Dores no Peito / Coração</td>
-                                <td class="loc-cell">
-                                    <h5>Simulado na View</h5>
-                                    <p>Luanda</p>
-                                </td>
-                                <td class="base-cell no-base">Não Alocada</td>
-                                <td>
-                                    <span class="status-badge">DESPACHADO</span>
-                                    <select class="status-select">
-                                        <option>Despachado</option>
-                                        <option>Cancelado</option>
-                                    </select>
-                                </td>
-                            </tr>
+                        <tbody id="occTableBody">
+                            <!-- Carregado via API -->
                         </tbody>
                     </table>
 
-                    <div class="pagination">
-                        <span class="page-text">Mostrando 3 de 132 ocorrências</span>
-                        <div style="display: flex; gap: 0.5rem; margin-left: 2rem;">
-                            <button class="page-btn">Anterior</button>
-                            <button class="page-btn active">1</button>
-                            <button class="page-btn">2</button>
-                            <button class="page-btn">Próxima</button>
-                        </div>
+                    <div class="pagination" id="paginationInfo">
+                        <span class="page-text" id="statsText">Carregando dados...</span>
                     </div>
                 </div>
             </div>
         </main>
     </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await loadUserData();
+            if (user) {
+                document.getElementById('adminName').textContent = user.nome;
+            }
+            
+            loadAllOccurrences();
+        });
+
+        async function loadAllOccurrences() {
+            const res = await ApiClient.get('admin.php?action=get_all_occurrences');
+            const tbody = document.getElementById('occTableBody');
+            
+            if (res.success) {
+                document.getElementById('statsText').textContent = `Mostrando ${res.data.length} ocorrências encontradas.`;
+                
+                if (res.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">Nenhuma ocorrência registada.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = res.data.map(occ => {
+                    const date = new Date(occ.data_abertura).toLocaleString('pt-PT');
+                    return `
+                        <tr>
+                            <td class="user-cell">
+                                <h4>${occ.utente_nome}</h4>
+                                <p>ID: #${occ.id} • ${occ.utente_tel}</p>
+                            </td>
+                            <td class="date-cell">${date}</td>
+                            <td class="cat-cell ${getStatusColorClass(occ.status)}">${occ.nome_categoria}</td>
+                            <td class="loc-cell">
+                                <h5>${occ.localizacao_texto}</h5>
+                                <p>${occ.latitude || '0'}, ${occ.longitude || '0'}</p>
+                            </td>
+                            <td class="base-cell ${!occ.nome_base ? 'no-base' : ''}">
+                                ${occ.nome_base || 'Não Alocada'}
+                            </td>
+                            <td>
+                                <span class="status-badge" style="background-color: ${getStatusColor(occ.status)}; color: white;">
+                                    ${occ.status.toUpperCase()}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        function getStatusColorClass(status) {
+            return (status === 'critica' || status === 'alta') ? 'cat-red' : 'cat-blue';
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case 'concluida': return '#10b981';
+                case 'aprovada': return '#3b82f6';
+                case 'rejeitada': return '#ef4444';
+                case 'despachada': return '#f59e0b';
+                default: return '#8c909c';
+            }
+        }
+    </script>
 </body>
 </html>

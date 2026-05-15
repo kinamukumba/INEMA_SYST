@@ -179,13 +179,13 @@
                         <i class="fa-solid fa-truck-medical"></i>
                     </div>
                     <div>
-                        <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-blue); margin: 0;">Ocorrência #1043</h2>
-                        <p style="font-size: 0.8rem; font-weight: 700; color: #ef4444; margin: 0;">A Despachar Viatura</p>
+                        <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-blue); margin: 0;" id="occNumber">Procurando Ocorrência...</h2>
+                        <p style="font-size: 0.8rem; font-weight: 700; color: #ef4444; margin: 0;" id="occStatus">Aguardando dados</p>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <div style="text-align: right;">
-                        <p style="font-size: 0.85rem; font-weight: 800; color: var(--primary-blue);">Kina Mukumba</p>
+                        <p style="font-size: 0.85rem; font-weight: 800; color: var(--primary-blue);" id="userFullName">Carregando...</p>
                         <p style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Cidadão</p>
                     </div>
                     <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: var(--text-muted);"><i class="fa-solid fa-user"></i></div>
@@ -208,7 +208,7 @@
                         </div>
                         <div>
                             <p class="detail-label">Tempo Estimado</p>
-                            <p class="detail-value">11 Min(s)</p>
+                            <p class="detail-value" id="occTime">-- Min(s)</p>
                         </div>
                     </div>
 
@@ -218,7 +218,7 @@
                         </div>
                         <div>
                             <p class="detail-label">Equipa & Viatura</p>
-                            <p class="detail-value">LD-44-55 (Suporte Avançado)</p>
+                            <p class="detail-value" id="occResources">Aguardando atribuição</p>
                         </div>
                     </div>
 
@@ -228,7 +228,7 @@
                         </div>
                         <div>
                             <p class="detail-label">Sua Localização GPS</p>
-                            <p class="detail-value">-8.8354, 13.2389</p>
+                            <p class="detail-value" id="occLocation">Carregando...</p>
                         </div>
                     </div>
                 </div>
@@ -236,44 +236,120 @@
         </main>
     </div>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- ApiClient JS -->
+    <script src="../assets/js/api.js"></script>
     <script>
-        // Inicialização do Mapa (Coordenadas de Luanda)
-        const map = L.map('map').setView([-8.8354, 13.2389], 14);
+        let map, userMarker, ambulanceMarker;
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Marcador do Utente
-        const userIcon = L.divIcon({
-            html: '<i class="fa-solid fa-location-dot user-location-icon"></i>',
-            className: 'custom-marker',
-            iconSize: [30, 30],
-            iconAnchor: [15, 30]
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await loadUserData();
+            if (user) {
+                document.getElementById('userFullName').textContent = user.nome;
+            }
+            
+            initMap();
+            loadOccurrenceData();
+            
+            // Atualizar a cada 10 segundos
+            setInterval(loadOccurrenceData, 10000);
         });
-        L.marker([-8.8354, 13.2389], {icon: userIcon}).addTo(map)
-            .bindPopup('Sua localização de emergência').openPopup();
 
-        // Marcador da Ambulância
-        const ambulanceIcon = L.divIcon({
-            html: '<i class="fa-solid fa-truck-medical ambulance-icon"></i>',
-            className: 'custom-marker',
-            iconSize: [40, 40],
-            iconAnchor: [20, 20]
-        });
-        const ambulanceMarker = L.marker([-8.8154, 13.2189], {icon: ambulanceIcon}).addTo(map)
-            .bindPopup('Viatura em caminho!');
+        function initMap() {
+            map = L.map('map').setView([-8.8354, 13.2389], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
 
-        // Simulação de movimento (opcional)
-        let lat = -8.8154;
-        let lng = 13.2189;
-        setInterval(() => {
-            lat -= 0.0001;
-            lng += 0.0001;
-            ambulanceMarker.setLatLng([lat, lng]);
-        }, 3000);
+            const userIcon = L.divIcon({
+                html: '<i class="fa-solid fa-location-dot user-location-icon"></i>',
+                className: 'custom-marker',
+                iconSize: [30, 30],
+                iconAnchor: [15, 30]
+            });
+            userMarker = L.marker([-8.8354, 13.2389], {icon: userIcon}).addTo(map)
+                .bindPopup('Sua localização de emergência');
+        }
+
+        async function loadOccurrenceData() {
+            const res = await ApiClient.get('utente.php?action=get_active_occurrence');
+            
+            if (res.success) {
+                const occ = res.data;
+                document.getElementById('occNumber').textContent = `Ocorrência #${occ.id}`;
+                
+                // Status formatado
+                const statusMap = {
+                    'pendente': 'Aguardando Triagem...',
+                    'aprovada': 'Aprovada! Aguardando Viatura...',
+                    'despachada': 'Viatura em Caminho!',
+                    'em_curso': 'Atendimento em Curso',
+                };
+                document.getElementById('occStatus').textContent = statusMap[occ.status] || occ.status;
+                document.getElementById('occLocation').textContent = `${occ.localizacao_texto}`;
+                
+                // Centralizar mapa se tiver coordenadas
+                if (occ.latitude && occ.longitude && userMarker) {
+                    const pos = [parseFloat(occ.latitude), parseFloat(occ.longitude)];
+                    userMarker.setLatLng(pos);
+                    map.setView(pos, 15);
+                }
+
+                // Mostrar Base Responsável e Viatura
+                if (occ.vtr_placa) {
+                    document.getElementById('occResources').textContent = `${occ.vtr_placa} - ${occ.vtr_modelo}`;
+                    document.querySelector('.map-overlay-info span').textContent = `Viatura ${occ.vtr_placa} em Deslocação!`;
+                    document.getElementById('occTime').textContent = "8-12 min";
+                    showAmbulanceSimulation(parseFloat(occ.latitude), parseFloat(occ.longitude), occ.vtr_placa);
+                } else if (occ.nome_base) {
+                    document.getElementById('occResources').textContent = `${occ.nome_base} (Preparando Envio)`;
+                    document.getElementById('occTime').textContent = "-- min";
+                } else {
+                    document.getElementById('occResources').textContent = "Aguardando Alocação";
+                    document.getElementById('occTime').textContent = "-- min";
+                }
+            } else {
+                document.getElementById('occNumber').textContent = "Sem Ocorrências Ativas";
+                document.getElementById('occStatus').textContent = "Redirecionando...";
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 4000);
+            }
+        }
+
+        function showAmbulanceSimulation(targetLat, targetLng, placa) {
+            if (!ambulanceMarker && targetLat && targetLng) {
+                const ambulanceIcon = L.divIcon({
+                    html: '<i class="fa-solid fa-truck-medical ambulance-icon"></i>',
+                    className: 'custom-marker',
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20]
+                });
+                
+                // Começar um pouco afastado para simular o trajeto
+                let startLat = targetLat + 0.015;
+                let startLng = targetLng - 0.015;
+                
+                ambulanceMarker = L.marker([startLat, startLng], {icon: ambulanceIcon}).addTo(map)
+                    .bindPopup(`Viatura ${placa} a caminho!`);
+                
+                // Simulação de movimento suave
+                let currentLat = startLat;
+                let currentLng = startLng;
+                
+                const moveInterval = setInterval(() => {
+                    if (currentLat > targetLat) currentLat -= 0.0002;
+                    if (currentLng < targetLng) currentLng += 0.0002;
+                    
+                    ambulanceMarker.setLatLng([currentLat, currentLng]);
+                    
+                    // Parar se chegar muito perto
+                    if (Math.abs(currentLat - targetLat) < 0.0005 && Math.abs(currentLng - targetLng) < 0.0005) {
+                        clearInterval(moveInterval);
+                        ambulanceMarker.bindPopup('Viatura chegou ao local!').openPopup();
+                    }
+                }, 2000);
+            }
+        }
     </script>
 </body>
 </html>

@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS alertas (
 
 -- Inserir Dados Iniciais (Admin e Categorias)
 INSERT INTO usuarios (nome, email, telefone, senha, tipo_usuario) 
-VALUES ('Administrador Central', 'admin@inema.ao', '900000000', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin');
+VALUES ('Administrador Central', 'admin@inema.ao', '900000000', '$2y$10$XnPO/jwkK5pdGclDMSltEugD1CaRLcvKSoM830F3gEBL5S.lQDQ4S', 'admin');
 
 INSERT INTO categorias_ocorrencia (nome_categoria, prioridade) VALUES 
 ('Acidente de Transito', 'alta'),

@@ -56,104 +56,124 @@
 <body>
     <div class="dashboard-layout">
         <!-- Sidebar Admin -->
-        <aside class="sidebar">
+        <aside class="sidebar admin-sidebar">
             <div class="sidebar-logo">
-                <i class="fa-solid fa-truck-medical text-yellow"></i>
-                <span>INEMA Base</span>
+                <i class="fa-solid fa-satellite-dish" style="color: #ebb924;"></i>
+                <span>INEMA Central</span>
             </div>
             <nav class="nav-menu">
-                <a href="index.html" class="nav-link">
-                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fa-solid fa-tower-broadcast"></i> Triagem
                 </a>
                 <a href="ocorrencias.html" class="nav-link">
-                    <i class="fa-solid fa-list-check"></i> Ocorrências
+                    <i class="fa-solid fa-list-ul"></i> Ocorrências
+                </a>
+                <a href="estatisticas.html" class="nav-link">
+                    <i class="fa-solid fa-chart-pie"></i> Estatísticas
+                </a>
+                <a href="registar_base.html" class="nav-link">
+                    <i class="fa-solid fa-building-circle-plus"></i> Registar Base
+                </a>
+                <a href="gestao_bases.html" class="nav-link">
+                    <i class="fa-solid fa-city"></i> Gestão de Bases
                 </a>
                 <a href="viaturas.html" class="nav-link active">
                     <i class="fa-solid fa-ambulance"></i> Viaturas
                 </a>
-                <a href="equipes.html" class="nav-link">
-                    <i class="fa-solid fa-user-group"></i> Equipes
-                </a>
-            </nav>
-            <div style="margin-top: auto;">
-                <a href="../login.html" class="nav-link">
+                
+                <a href="#" class="nav-link logout" id="btnLogout">
                     <i class="fa-solid fa-right-from-bracket"></i> Sair
                 </a>
-            </div>
+            </nav>
         </aside>
 
         <!-- Main -->
         <main class="main-content">
             <header class="top-bar">
                 <div style="display: flex; align-items: center; gap: 1rem;">
-                    <span style="font-weight: 700; font-size: 1.25rem;">Gestão de Viaturas</span>
+                    <span style="font-weight: 700; font-size: 1.25rem;">Frota Nacional INEMA</span>
                 </div>
-                <button class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
-                    <i class="fa-solid fa-plus"></i> Nova Viatura
-                </button>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;" id="adminName">Carregando...</p>
+                        <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c; text-transform: uppercase;">Administrador</p>
+                    </div>
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #8c909c;"><i class="fa-solid fa-user"></i></div>
+                </div>
             </header>
 
             <div class="content-wrapper">
-                <div class="vehicle-grid">
-                    <!-- Viatura 1 -->
-                    <div class="card vehicle-card">
-                        <div class="vehicle-status">
-                            <span class="badge badge-success">Disponível</span>
-                        </div>
-                        <div class="vehicle-info">
-                            <i class="fa-solid fa-truck-medical" style="font-size: 2rem; color: var(--primary-blue); margin-bottom: 1rem; display: block;"></i>
-                            <h3>LD-01-AM</h3>
-                            <p>Toyota Land Cruiser - Suporte Avançado</p>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 85%;"></div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
-                                <span>Combustível</span>
-                                <span>85%</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Viatura 2 -->
-                    <div class="card vehicle-card">
-                        <div class="vehicle-status">
-                            <span class="badge badge-warning">Em Missão</span>
-                        </div>
-                        <div class="vehicle-info">
-                            <i class="fa-solid fa-truck-medical" style="font-size: 2rem; color: var(--primary-blue); margin-bottom: 1rem; display: block;"></i>
-                            <h3>LD-04-AM</h3>
-                            <p>Mercedes Sprinter - Suporte Básico</p>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 40%;"></div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
-                                <span>Combustível</span>
-                                <span>40%</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Viatura 3 -->
-                    <div class="card vehicle-card">
-                        <div class="vehicle-status">
-                            <span class="badge badge-danger">Manutenção</span>
-                        </div>
-                        <div class="vehicle-info">
-                            <i class="fa-solid fa-truck-medical" style="font-size: 2rem; color: var(--primary-blue); margin-bottom: 1rem; display: block;"></i>
-                            <h3>LD-07-AM</h3>
-                            <p>Toyota Hiace - Suporte Médio</p>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 15%; background-color: var(--danger);"></div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
-                                <span>Combustível</span>
-                                <span>15%</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="vehicle-grid" id="vehicleGrid">
+                    <!-- Carregado via API -->
+                    <p style="text-align: center; color: #8c909c; padding: 3rem; grid-column: 1/-1;">Buscando viaturas em todo o país...</p>
                 </div>
             </div>
         </main>
     </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await loadUserData();
+            if (user) {
+                document.getElementById('adminName').textContent = user.nome;
+            }
+            
+            loadAllVehicles();
+
+            document.getElementById('btnLogout').addEventListener('click', async (e) => {
+                e.preventDefault();
+                await ApiClient.get('auth.php?action=logout');
+                window.location.href = '../login.html';
+            });
+        });
+
+        async function loadAllVehicles() {
+            const res = await ApiClient.get('admin.php?action=get_all_vehicles');
+            const grid = document.getElementById('vehicleGrid');
+            
+            if (res.success) {
+                if (res.data.length === 0) {
+                    grid.innerHTML = '<p style="text-align: center; color: #8c909c; padding: 3rem; grid-column: 1/-1;">Nenhuma viatura cadastrada no sistema.</p>';
+                    return;
+                }
+
+                grid.innerHTML = res.data.map(vehicle => `
+                    <div class="card vehicle-card">
+                        <div class="vehicle-status">
+                            <span class="badge ${getStatusBadge(vehicle.status)}">${vehicle.status.toUpperCase()}</span>
+                        </div>
+                        <div class="vehicle-info">
+                            <i class="fa-solid fa-truck-medical" style="font-size: 2rem; color: var(--primary-blue); margin-bottom: 1rem; display: block;"></i>
+                            <h3>${vehicle.matricula}</h3>
+                            <p>${vehicle.tipo} • <strong>Base: ${vehicle.nome_base}</strong></p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${vehicle.nivel_combustivel}%; background-color: ${getFuelColor(vehicle.nivel_combustivel)};"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                                <span>Combustível</span>
+                                <span>${vehicle.nivel_combustivel}%</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'disponivel': return 'badge-success';
+                case 'em_servico': return 'badge-warning';
+                case 'manutencao': return 'badge-danger';
+                default: return '';
+            }
+        }
+
+        function getFuelColor(level) {
+            if (level > 50) return '#10b981';
+            if (level > 20) return '#f59e0b';
+            return '#ef4444';
+        }
+    </script>
 </body>
 </html>

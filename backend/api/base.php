@@ -68,4 +68,67 @@ if ($action === 'dispatch_ambulance') {
         sendResponse(false, 'Erro ao despachar: ' . $e->getMessage());
     }
 }
-?>
+if ($action === 'get_my_fleet') {
+    $stmt = $pdo->prepare("SELECT * FROM viaturas WHERE base_id = ? ORDER BY placa ASC");
+    $stmt->execute([$base_id]);
+    sendResponse(true, 'Frota carregada', $stmt->fetchAll());
+}
+
+if ($action === 'register_vehicle') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $placa = sanitize($data['placa'] ?? '');
+    $modelo = sanitize($data['modelo'] ?? '');
+    $tipo = sanitize($data['tipo_suporte'] ?? 'basico');
+
+    try {
+        $stmt = $pdo->prepare("INSERT INTO viaturas (base_id, placa, modelo, tipo_suporte, status_vtr) VALUES (?, ?, ?, ?, 'disponivel')");
+        $stmt->execute([$base_id, $placa, $modelo, $tipo]);
+        sendResponse(true, 'Viatura registada com sucesso!');
+    } catch (PDOException $e) {
+        sendResponse(false, 'Erro ao registar: ' . $e->getMessage());
+    }
+}
+
+if ($action === 'update_vehicle_status') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $id = (int)($data['id'] ?? 0);
+    $status = sanitize($data['status'] ?? 'disponivel');
+
+    $stmt = $pdo->prepare("UPDATE viaturas SET status_vtr = ? WHERE id = ? AND base_id = ?");
+    $stmt->execute([$status, $id, $base_id]);
+    sendResponse(true, 'Status da viatura atualizado.');
+}
+
+if ($action === 'delete_vehicle') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $id = (int)($data['id'] ?? 0);
+
+    $stmt = $pdo->prepare("DELETE FROM viaturas WHERE id = ? AND base_id = ?");
+    $stmt->execute([$id, $base_id]);
+    sendResponse(true, 'Viatura removida da frota.');
+}
+
+if ($action === 'get_my_teams') {
+    $stmt = $pdo->prepare("SELECT * FROM equipes WHERE base_id = ?");
+    $stmt->execute([$base_id]);
+    sendResponse(true, 'Equipas carregadas', $stmt->fetchAll());
+}
+
+if ($action === 'register_team') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $nome = sanitize($data['nome_equipe'] ?? '');
+    $membros = sanitize($data['descricao_membros'] ?? '');
+
+    $stmt = $pdo->prepare("INSERT INTO equipes (base_id, nome_equipe, descricao_membros) VALUES (?, ?, ?)");
+    $stmt->execute([$base_id, $nome, $membros]);
+    sendResponse(true, 'Equipa registada com sucesso!');
+}
+
+if ($action === 'delete_team') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $id = (int)($data['id'] ?? 0);
+
+    $stmt = $pdo->prepare("DELETE FROM equipes WHERE id = ? AND base_id = ?");
+    $stmt->execute([$id, $base_id]);
+    sendResponse(true, 'Equipa removida.');
+}
