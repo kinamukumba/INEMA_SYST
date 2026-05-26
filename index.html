@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,327 +9,330 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <style>
-        :root {
-            --inema-blue: #232c5f;
-            --inema-yellow: #ebb924;
-            --white: #ffffff;
-            --gray-bg: #f8f9fa;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--white); color: var(--inema-blue); overflow-x: hidden; }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-
-        /* Header */
-        header {
-            height: 90px; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 4rem; position: fixed; width: 100%; top: 0; background: white; z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .logo i { font-size: 2.5rem; color: var(--inema-blue); }
-        nav ul { display: flex; list-style: none; gap: 2.5rem; }
-        nav ul li a { text-decoration: none; color: #a0aec0; font-weight: 500; font-size: 0.95rem; transition: 0.3s; }
-        nav ul li a.active, nav ul li a:hover { color: var(--inema-yellow); }
-        .btn-entrar { background-color: var(--inema-yellow); color: white; padding: 0.6rem 2.5rem; border-radius: 2rem; font-weight: 700; text-decoration: none; text-transform: uppercase; font-size: 0.85rem; }
-
-        /* Hero */
-        .hero { padding: 180px 0 100px; display: flex; align-items: center; justify-content: space-between; position: relative; }
-        .hero-text { flex: 1.2; z-index: 2; }
-        .hero-text h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 2rem; }
-        .hero-text h1 span { color: var(--inema-yellow); }
-        .hero-btns { display: flex; gap: 1rem; margin-top: 3rem; }
-        .hero-btn { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.8rem; border-radius: 0.5rem; text-decoration: none; font-weight: 700; font-size: 0.85rem; }
-        .btn-yellow { background-color: var(--inema-yellow); color: white; }
-        .btn-dark { background-color: var(--inema-blue); color: white; }
-        .hero-image { flex: 1; text-align: right; position: relative; }
-        .hero-image img { width: 95%; border-radius: 0 0 0 150px; box-shadow: -20px 20px 0 rgba(235, 185, 36, 0.1); }
-
-        /* Apresentação */
-        .presentation { background-color: var(--inema-blue); color: white; padding: 100px 0; }
-        .presentation h2 { font-size: 2.2rem; text-align: center; margin-bottom: 4rem; position: relative; }
-        .presentation h2::after { content: ''; display: block; width: 80px; height: 4px; background: var(--inema-yellow); margin: 15px auto; }
-        .presentation-content { display: flex; gap: 4rem; align-items: center; }
-        .video-placeholder { flex: 1; height: 350px; background: white; border-radius: 1rem; }
-        .text-box { flex: 1; line-height: 1.8; font-size: 0.95rem; color: rgba(255,255,255,0.8); }
-
-        /* Assistência */
-        .assistance { padding: 100px 0; }
-        .assistance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
-        .check-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0; }
-        .check-item { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.85rem; }
-        .check-item i { color: var(--inema-yellow); }
-        .assistance-images img { width: 100%; border-radius: 1rem; margin-bottom: 1.5rem; }
-
-        /* Sistema de Registro (Nova Seção) */
-        .system-section { background-color: #f1f5f9; padding: 0; display: flex; align-items: center; overflow: hidden; }
-        .system-img { flex: 1; }
-        .system-img img { width: 100%; height: 500px; object-fit: cover; }
-        .system-text { flex: 1; padding: 5rem; }
-        .system-text h2 { font-size: 2rem; margin-bottom: 1.5rem; color: var(--inema-yellow); }
-        .system-text p { line-height: 1.8; color: var(--text-muted); }
-
-        /* Contacto */
-        .contact { padding: 100px 0; text-align: center; }
-        .contact h2 { font-size: 2rem; margin-bottom: 4rem; font-weight: 800; }
-        .contact-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
-        .contact-card { padding: 3rem 1.5rem; border-radius: 0.5rem; color: white; }
-        .bg-yellow { background-color: var(--inema-yellow); }
-        .bg-dark { background-color: var(--inema-blue); }
-
-        /* Ocorrências (Nova Seção) */
-        .occurrences { padding: 100px 0; background: #fafafa; text-align: center; }
-        .occurrences h2 { font-size: 1.8rem; color: var(--inema-yellow); margin-bottom: 3rem; text-transform: uppercase; letter-spacing: 2px; }
-        .occ-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; max-width: 1000px; margin: 0 auto; }
-        .occ-card { background: white; border-radius: 1rem; overflow: hidden; display: flex; text-align: left; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .occ-img { width: 150px; height: 150px; background: #ddd; }
-        .occ-info { padding: 1.5rem; flex: 1; }
-        .occ-info h4 { font-size: 0.9rem; margin-bottom: 0.5rem; }
-        .occ-info p { font-size: 0.75rem; color: #888; }
-
-        /* Testemunho (Nova Seção) */
-        .testimonial { background: linear-gradient(rgba(180, 140, 20, 0.9), rgba(180, 140, 20, 0.9)), url('https://img.freepik.com/fotos-gratis/medico-em-seu-escritorio_23-2148506443.jpg'); background-size: cover; padding: 100px 0; text-align: center; color: white; }
-        .testimonial-content { max-width: 800px; margin: 0 auto; }
-        .testimonial i { font-size: 3rem; margin-bottom: 2rem; opacity: 0.5; }
-        .testimonial p { font-size: 1.2rem; font-style: italic; margin-bottom: 2rem; }
-
-        /* Bases (Nova Seção) */
-        .bases { padding: 100px 0; }
-        .bases-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
-        .base-card { background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: left; position: relative; }
-        .base-card .plus-icon { position: absolute; top: -15px; right: 20px; background: var(--inema-yellow); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .base-btn { background: var(--inema-yellow); color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 700; margin-top: 1rem; cursor: pointer; }
-
-        /* Footer */
-        footer { background-color: var(--inema-blue); color: white; padding: 80px 0 20px; }
-        .footer-grid { display: grid; grid-template-columns: 1fr 1fr 1.5fr 2fr; gap: 4rem; }
-        .footer-col h4 { margin-bottom: 2rem; font-size: 1.1rem; }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.6); }
-        .newsletter { display: flex; gap: 0.5rem; }
-        .newsletter input { background: rgba(255,255,255,0.1); border: none; padding: 1rem; border-radius: 0.5rem; color: white; flex: 1; }
-        .newsletter button { background: var(--inema-yellow); border: none; padding: 1rem; border-radius: 0.5rem; color: white; cursor: pointer; }
-    </style>
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/reset.css">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
 </head>
+
 <body>
 
-    <header>
-        <div class="logo"><i class="fa-solid fa-star-of-life"></i></div>
-        <nav>
-            <ul>
-                <li><a href="#" class="active">Inicio</a></li>
-                <li><a href="#">Sobre</a></li>
-                <li><a href="#">Aplicações</a></li>
-                <li><a href="#">Configurações</a></li>
-            </ul>
-        </nav>
-        <a href="login.html" class="btn-entrar">Entrar</a>
+    <!-- Header -->
+    <header class="header animate-on-scroll fade-down">
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon-bg">
+                    <i class="fa-solid fa-star-of-life logo-icon"></i>
+                </div>
+            </div>
+            <nav class="navbar">
+                <ul class="nav-links">
+                    <li><a href="#inicio" class="active">Inicio</a></li>
+                    <li><a href="#sobre">Sobre</a></li>
+                    <li><a href="#aplicacoes">Aplicações</a></li>
+                    <li><a href="#configuracoes">Configurações</a></li>
+                </ul>
+            </nav>
+            <a href="./login.html" class="header-actions">
+                <button class="btn btn-primary btn-entrar">Entrar</button>
+            </a>
+        </div>
     </header>
 
-    <section class="hero container">
-        <div class="hero-text">
-            <h1>Bem Vindo ao <br>Sistema de Registro de <br>Ocorrências do <span>INEMA</span></h1>
-            <div class="hero-btns">
-                <a href="#" class="hero-btn btn-yellow">Saber mais sobre <i class="fa-solid fa-circle-info"></i></a>
-                <a href="register.html" class="hero-btn btn-dark">Registrar Ocorrência <i class="fa-solid fa-asterisk"></i></a>
-                <a href="login.html" class="hero-btn btn-yellow">Aceder ao perfil <i class="fa-solid fa-user"></i></a>
-            </div>
-        </div>
-        <div class="hero-image">
-            <img src="inema_hero_doctor_1777576023494.png" alt="Médico INEMA">
-        </div>
-    </section>
+    <!-- Hero Section -->
+    <section id="inicio" class="hero">
+        <div class="hero-bg-curve"></div>
+        <div class="container hero-content">
+            <div class="hero-text animate-on-scroll fade-right">
+                <h1>Bem Vindo ao <br> <span class="fw-normal">Sistema de Registro de <br> Ocorrências do <span
+                            class="text-yellow fw-bold">INEMA</span></span></h1>
 
-    <section class="presentation container">
-        <h2>Apresentação Institucional</h2>
-        <div class="presentation-content">
-            <div class="video-placeholder"></div>
-            <div class="text-box">
-                <p><strong>Instituto Nacional de Emergências Médicas de Angola (INEMA)</strong></p>
-                <p>O INEMA é uma instituição pública vocacionada para a coordenação e prestação de cuidados de emergência médica pré-hospitalar em todo o território nacional. O instituto atua na assistência rápida a vítimas de acidentes, doenças súbitas e outras situações que representem risco imediato de vida.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="assistance container">
-        <div class="assistance-grid">
-            <div class="assistance-text">
-                <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">Assistência médica no local</h2>
-                <p style="color: #64748b; font-size: 0.9rem;">As equipas do INEMA prestam primeiros socorros avançados no local do incidente ou doença súbita.</p>
-                <div class="check-list">
-                    <div class="check-item"><i class="fa-solid fa-circle-check"></i> Acidentes rodoviários</div>
-                    <div class="check-item"><i class="fa-solid fa-circle-check"></i> Postos de emergência</div>
-                    <div class="check-item"><i class="fa-solid fa-circle-check"></i> Paragem cardíaca</div>
-                    <div class="check-item"><i class="fa-solid fa-circle-check"></i> Intoxicações</div>
-                    <div class="check-item"><i class="fa-solid fa-circle-check"></i> AVC</div>
-                    <div class="check-item"><i class="fa-solid fa-circle-check"></i> Afogamentos</div>
-                </div>
-                <div style="margin-top: 2rem;">
-                    <h4>Missão</h4>
-                    <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">Prestar assistência médica de emergência pré-hospitalar com rapidez, qualidade e eficiência.</p>
+                <div class="hero-buttons">
+                    
+                    <a href="./login.html">
+                        <button class="btn btn-primary">
+                        Acessar o perfil
+                        <span class="icon-circle dark-icon"><i class="fa-solid fa-user"></i></span>
+                    </button>
+                    </a>
                 </div>
             </div>
-            <div class="assistance-images">
-                <img src="inema_ambulance_emergency_1777576046140.png" alt="Equipa INEMA">
-                <img src="inema_ambulance_emergency_1777576046140.png" alt="Ambulância">
+            <div class="hero-image animate-on-scroll fade-left">
+                <img src="assets/images/hero_doctor.png" alt="Médico profissional" class="img-fluid doctor-img">
             </div>
         </div>
     </section>
 
-    <section class="system-section">
-        <div class="system-img">
-            <img src="inema_emergency_operator_1777576172905.png" alt="Operador INEMA">
-        </div>
-        <div class="system-text">
-            <h2>Sistema de Registo de Ocorrências</h2>
-            <p>O sistema de Registo de Ocorrências do INEMA foi desenvolvido para dar uma resposta rápida às emergências médicas, permitindo o registo, acompanhamento e gestão das ocorrências em tempo real para uma melhor eficiência nos socorros.</p>
-        </div>
-    </section>
-
-    <section class="contact container">
-        <h2>CONTACTE O INEMA PARA <br>QUALQUER EMERGÊNCIA</h2>
-        <div class="contact-grid">
-            <div class="contact-card bg-yellow">
-                <i class="fa-solid fa-phone fa-2x" style="margin-bottom: 1.5rem;"></i>
-                <p>EMERGÊNCIA</p>
-                <h3 style="font-size: 1.8rem;">112</h3>
-            </div>
-            <div class="contact-card bg-dark">
-                <i class="fa-solid fa-location-dot fa-2x" style="margin-bottom: 1.5rem;"></i>
-                <p>LOCALIZAÇÃO</p>
-                <h4 style="font-size: 0.8rem; margin-top: 0.5rem;">Rua Direita da Samba, Luanda, Angola</h4>
-            </div>
-            <div class="contact-card bg-yellow">
-                <i class="fa-solid fa-envelope fa-2x" style="margin-bottom: 1.5rem;"></i>
-                <p>EMAIL</p>
-                <h4 style="font-size: 0.8rem; margin-top: 0.5rem;">inema@ao.com</h4>
-            </div>
-            <div class="contact-card bg-yellow">
-                <i class="fa-solid fa-clock fa-2x" style="margin-bottom: 1.5rem;"></i>
-                <p>DISPONIBILIDADE</p>
-                <h3 style="font-size: 1.5rem;">24/24h</h3>
-            </div>
-        </div>
-    </section>
-
-    <section class="occurrences">
+    <!-- Apresentação Institucional -->
+    <section id="sobre" class="institucional">
         <div class="container">
-            <h2>ACOMPANHE AS ÚLTIMAS OCORRÊNCIAS</h2>
-            <div class="occ-grid">
-                <div class="occ-card">
-                    <div class="occ-img"></div>
-                    <div class="occ-info">
-                        <h4>Acidente no quarteirão 104, Rodrigues casa 5 Mutamba</h4>
-                        <p><i class="fa-solid fa-clock"></i> 4h • <i class="fa-solid fa-message"></i> 2</p>
-                    </div>
-                </div>
-                <div class="occ-card">
-                    <div class="occ-img"></div>
-                    <div class="occ-info">
-                        <h4>Acidente no quarteirão 104, Rodrigues casa 5 Mutamba</h4>
-                        <p><i class="fa-solid fa-clock"></i> 6h • <i class="fa-solid fa-message"></i> 12</p>
-                    </div>
-                </div>
-                <div class="occ-card">
-                    <div class="occ-img"></div>
-                    <div class="occ-info">
-                        <h4>Acidente no quarteirão 104, Rodrigues casa 5 Mutamba</h4>
-                        <p><i class="fa-solid fa-clock"></i> 4h • <i class="fa-solid fa-message"></i> 8</p>
-                    </div>
-                </div>
-                <div class="occ-card">
-                    <div class="occ-img"></div>
-                    <div class="occ-info">
-                        <h4>Acidente no quarteirão 104, Rodrigues casa 5 Mutamba</h4>
-                        <p><i class="fa-solid fa-clock"></i> 2h • <i class="fa-solid fa-message"></i> 12</p>
-                    </div>
-                </div>
+            <div class="institucional-header animate-on-scroll fade-up">
+                <h2 class="section-title text-yellow">Apresentação Institucional</h2>
             </div>
-            <div style="margin-top: 2.5rem; display: flex; justify-content: center; gap: 0.5rem;">
-                <span style="width: 10px; height: 10px; border-radius: 50%; background: #ccc;"></span>
-                <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--inema-yellow);"></span>
-                <span style="width: 10px; height: 10px; border-radius: 50%; background: #ccc;"></span>
+            <div class="institucional-content">
+                <div class="institucional-image animate-on-scroll fade-right">
+                    <div class="image-placeholder bg-white">
+                        <img src="assets/images/institutional.png" alt="Estrutura INEMA">
+                    </div>
+                </div>
+                <div class="institucional-text animate-on-scroll fade-left">
+                    <h3 class="text-yellow">Instituto Nacional de Emergências <br> Médicas de Angola (INEMA)</h3>
+                    <p>O Instituto Nacional de Emergências Médicas de Angola (INEMA) é uma instituição pública focada em
+                        disponibilizar a reanimação e prestação de socorro às emergências médicas pré-hospitalares em
+                        todo o território nacional. O instituto atua na assistência rápida a vítimas de acidentes,
+                        doenças súbitas e outras situações que representem risco imediato de vida.</p>
+                    <p>Integrado no sistema nacional de saúde e supervisionado pelo Ministério da Saúde de Angola, o
+                        INEMA tem como missão garantir resgate, socorro efetivo, eficiente e organizado, assegurando a
+                        continuidade no local da ocorrência, a estabilização de vítimas e o transporte seguro para
+                        unidades hospitalares adequadas.</p>
+                    <div class="custom-hr"></div>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="testimonial">
-        <div class="testimonial-content">
-            <i class="fa-solid fa-quote-left"></i>
-            <p>A rapidez no atendimento do INEMA salvou a vida do meu pai. O sistema de registo permitiu que a ambulância chegasse em poucos minutos com toda a informação necessária.</p>
-            <h4 style="font-weight: 800; text-transform: uppercase;">Mário Sebastião</h4>
-        </div>
-    </section>
-
-    <section class="bases container">
-        <div class="bases-grid">
-            <div class="base-card">
-                <div class="plus-icon"><i class="fa-solid fa-plus"></i></div>
-                <h4 style="margin-bottom: 1rem;">Base INEMA Cacuaco</h4>
-                <p style="font-size: 0.75rem; color: #888;">Localizada na avenida do centro operacional para dar uma resposta eficaz.</p>
-                <button class="base-btn">Ler mais sobre</button>
-            </div>
-            <div class="base-card">
-                <div class="plus-icon"><i class="fa-solid fa-plus"></i></div>
-                <h4 style="margin-bottom: 1rem;">Base INEMA Viana</h4>
-                <p style="font-size: 0.75rem; color: #888;">Localizada na avenida do centro operacional para dar uma resposta eficaz.</p>
-                <button class="base-btn">Ler mais sobre</button>
-            </div>
-            <div class="base-card">
-                <div class="plus-icon"><i class="fa-solid fa-plus"></i></div>
-                <h4 style="margin-bottom: 1rem;">Base INEMA Talatona</h4>
-                <p style="font-size: 0.75rem; color: #888;">Localizada na avenida do centro operacional para dar uma resposta eficaz.</p>
-                <button class="base-btn">Ler mais sobre</button>
-            </div>
-            <div class="base-card">
-                <div class="plus-icon"><i class="fa-solid fa-plus"></i></div>
-                <h4 style="margin-bottom: 1rem;">Base INEMA Kilamba</h4>
-                <p style="font-size: 0.75rem; color: #888;">Localizada na avenida do centro operacional para dar uma resposta eficaz.</p>
-                <button class="base-btn">Ler mais sobre</button>
-            </div>
-        </div>
-    </section>
-
-    <footer>
+    <!-- Assistencia médica no local -->
+    <section id="aplicacoes" class="assistencia">
         <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                        <i class="fa-solid fa-star-of-life" style="font-size: 2.5rem;"></i>
-                        <h3 style="font-weight: 800;">INEMA</h3>
+            <div class="assistencia-grid">
+                <div class="assistencia-text-side animate-on-scroll fade-right">
+                    <h2 class="section-title text-blue" style="text-align: left; margin-bottom: 20px;">Assistência
+                        médica no local</h2>
+                    <p class="subtitle">As equipas do INEMA prestam primeiros socorros de emergência no local do
+                        acidente ou doença súbita.</p>
+
+                    <ul class="services-list">
+                        <li><i class="fa-solid fa-circle text-yellow small-dot"></i> Assistentes e viaturas</li>
+                        <li><i class="fa-solid fa-circle text-yellow small-dot"></i> Pontos de emergência</li>
+                        <li><i class="fa-solid fa-circle text-yellow small-dot"></i> Massagem cardíaca</li>
+                        <li><i class="fa-solid fa-circle text-yellow small-dot"></i> Intoxicações</li>
+                        <li><i class="fa-solid fa-circle text-yellow small-dot"></i> AVC</li>
+                        <li><i class="fa-solid fa-circle text-yellow small-dot"></i> Afogamento</li>
+                    </ul>
+
+                    <div class="missao-visao">
+                        <h4 class="text-blue">Missão</h4>
+                        <p>Prestar assistência médica de emergência pré-hospitalar com rapidez, qualidade e eficiência,
+                            contribuindo para a redução da mortalidade e das complicações causadas por acidentes e
+                            emergências médicas.</p>
+
+                        <h4 class="text-blue">Visão</h4>
+                        <p>Ser uma instituição de referência nacional na gestão e resposta a emergências médicas, com
+                            recursos humanos e equipamentos avançados alcançando um rácio de cobertura em todo o
+                            território nacional.</p>
                     </div>
                 </div>
-                <div class="footer-col">
-                    <h4>Links Importantes</h4>
-                    <ul class="footer-links">
-                        <li>Início</li>
-                        <li>Sobre</li>
-                        <li>Aplicações</li>
-                        <li>Configurações</li>
+                <div class="assistencia-image-side animate-on-scroll fade-left">
+                    <img src="assets/images/medical_team.png" alt="Equipa médica"
+                        class="img-fluid card mb-20 img-framed">
+                    <img src="assets/images/medical_team.png" alt="Equipa médica" class="img-fluid card img-framed"
+                        style="margin-top: 15px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sistema de Registro -->
+    <section class="sistema-registro">
+        <div class="container container-registro">
+            <div class="registro-image animate-on-scroll fade-right">
+                <img src="assets/images/doctor_computer.png" alt="Sistema Computadorizado"
+                    class="img-fluid border-radius-md framed-img-large">
+            </div>
+            <div class="registro-text animate-on-scroll fade-left">
+                <h2 class="section-title text-yellow" style="text-align: left;">Sistema de Registo de<br>Ocorrências
+                </h2>
+                <p>O Sistema de Registo de Ocorrências do INEMA foi desenvolvido para automatizar a gestão das
+                    emergências médicas da mesma forma, o registo, acompanhamento e análise das ocorrências, minimizando
+                    tempos de resposta às emergências.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contacto INEMA -->
+    <section class="contacto bg-white">
+        <div class="container">
+            <div class="animate-on-scroll fade-up">
+                <h2 class="section-title text-blue mb-10">CONTACTE O INEMA PARA<br>QUALQUER EMERGÊNCIA</h2>
+                <p class="text-center subtitle-contact">Aproveitamos este canal de comunicação focado em resolver as
+                    emergências médicas<br>na sua região, de forma interativa e com resposta rápida.</p>
+            </div>
+
+            <div class="contact-grid">
+                <div class="contact-card bg-yellow animate-on-scroll fade-up" style="transition-delay: 0.1s;">
+                    <i class="fa-solid fa-stethoscope icon-large text-blue"></i>
+                    <h4>EMERGÊNCIA</h4>
+                    <h3>112</h3>
+                </div>
+                <div class="contact-card bg-blue text-white animate-on-scroll fade-up" style="transition-delay: 0.2s;">
+                    <i class="fa-solid fa-location-dot icon-large text-yellow"></i>
+                    <h4>LOCALIZAÇÃO</h4>
+                    <p style="font-size: 14px; margin-top:10px;">Rua Ndunduma<br>Mutamba, Cimento</p>
+                </div>
+                <div class="contact-card bg-yellow animate-on-scroll fade-up" style="transition-delay: 0.3s;">
+                    <i class="fa-regular fa-envelope icon-large text-blue"></i>
+                    <h4>EMAIL</h4>
+                    <p style="font-size: 14px; font-weight:600; margin-top:10px;">contato.inema@gmail.com</p>
+                </div>
+                <div class="contact-card bg-yellow animate-on-scroll fade-up" style="transition-delay: 0.4s;">
+                    <i class="fa-regular fa-clock icon-large text-blue"></i>
+                    <h4>DISPONIBILIDADE</h4>
+                    <h3>24/24h</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ocorrências -->
+    <section class="ocorrencias bg-light">
+        <div class="container">
+            <h2 class="section-title text-yellow animate-on-scroll fade-up">ACOMPANHE AS ÚLTIMAS<br>OCORRÊNCIAS</h2>
+
+            <div class="occurrences-grid">
+                <div class="occurrence-card card animate-on-scroll fade-up" style="transition-delay: 0.1s;">
+                    <img src="assets/images/occurrence_1.png" alt="Ocorrência" class="occurrence-img">
+                    <div class="occurrence-info">
+                        <span class="date text-yellow">Hoje às 11:34 AM, Luanda</span>
+                        <h4>Acidente na via principal de Viana,<br> Rodrigues causa 5 mortes</h4>
+                        <div class="stats">
+                            <span><i class="fa-solid fa-heart text-yellow"></i> 85</span>
+                            <span><i class="fa-solid fa-comment text-yellow"></i> 26</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="occurrence-card card animate-on-scroll fade-up" style="transition-delay: 0.2s;">
+                    <img src="assets/images/occurrence_1.png" alt="Ocorrência" class="occurrence-img">
+                    <div class="occurrence-info">
+                        <span class="date text-yellow">Ontem às 10:20 AM, Sul</span>
+                        <h4>Acidente na avenida Deolinda<br> Rodrigues choca 3 mortes</h4>
+                        <div class="stats">
+                            <span><i class="fa-solid fa-heart text-yellow"></i> 65</span>
+                            <span><i class="fa-solid fa-comment text-yellow"></i> 13 Mil</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="occurrence-card card animate-on-scroll fade-up" style="transition-delay: 0.3s;">
+                    <img src="assets/images/occurrence_1.png" alt="Ocorrência" class="occurrence-img">
+                    <div class="occurrence-info">
+                        <span class="date text-yellow">Hoje às 11:34 AM, Cacuaco</span>
+                        <h4>Acidente na avenida Deolinda<br> Rodrigues choca 5 mortes</h4>
+                        <div class="stats">
+                            <span><i class="fa-solid fa-heart text-yellow"></i> 85</span>
+                            <span><i class="fa-solid fa-comment text-yellow"></i> 26</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="occurrence-card card animate-on-scroll fade-up" style="transition-delay: 0.4s;">
+                    <img src="assets/images/occurrence_1.png" alt="Ocorrência" class="occurrence-img">
+                    <div class="occurrence-info">
+                        <span class="date text-yellow">Segunda às 13:40 PM, Talatona</span>
+                        <h4>Acidente na via expressa<br> Rodrigues choca 2 carros</h4>
+                        <div class="stats">
+                            <span><i class="fa-solid fa-heart text-yellow"></i> 65</span>
+                            <span><i class="fa-solid fa-comment text-yellow"></i> 12 Mil</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slider-dots animate-on-scroll fade-up">
+                <span class="dot active"></span>
+                <span class="dot dark"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="testimonial animate-on-scroll fade-in">
+        <div class="testimonial-overlay"></div>
+        <div class="container text-center relative-z">
+            <i class="fa-solid fa-quote-left quote-icon text-white"></i>
+            <p class="quote-text">"Lorem ipsum dolor sit amet, consectetur adipiscing elit.<br>Nulla placerat molestie,
+                a tortor ornare ornare. Quisque<br>Aenean scelerisque, felis vitae tortor eugiat. Velit
+                nonedui<br>Consequat faucibus porttitor aenean."</p>
+            <p class="quote-author">Matias Abelardo</p>
+
+            <div class="slider-dots color-white mt-4">
+                <span class="dot active"></span>
+                <span class="dot dark"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bases Section -->
+    <section class="bases bg-light">
+        <div class="container">
+            <div class="bases-grid" id="basesGrid">
+                <div class="base-card card animate-on-scroll fade-up" style="transition-delay: 0.1s;" id="basesLoadingCard">
+                    <div class="base-card-header">
+                        <div class="plus-icon"><i class="fa-solid fa-spinner fa-spin"></i></div>
+                    </div>
+                    <div class="base-card-body">
+                        <h3 class="text-blue text-center">Carregando bases...</h3>
+                        <p class="text-center">Aguarde enquanto buscamos as bases ativas cadastradas pelo INEMA.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="configuracoes" class="footer">
+        <div class="container animate-on-scroll fade-in">
+            <div class="footer-top">
+                <div class="footer-logo">
+                    <div class="logo-icon-bg-small">
+                        <i class="fa-solid fa-plus text-blue"></i>
+                    </div>
+                    <span class="logo-text text-white">INEMA</span>
+                </div>
+
+                <div class="footer-links">
+                    <h4 class="text-white">Links Importantes</h4>
+                    <ul>
+                        <li><a href="#inicio">Início</a></li>
+                        <li><a href="#sobre">Sobre</a></li>
+                        <li><a href="#aplicacoes">Aplicações</a></li>
+                        <li><a href="#configuracoes">Configurações</a></li>
                     </ul>
                 </div>
-                <div class="footer-col">
-                    <h4>Contactos</h4>
-                    <ul class="footer-links">
-                        <li>Cód. 112</li>
-                        <li>E-mail: support@inema.ao</li>
-                        <li>Rua Direita da Samba, Luanda</li>
+
+                <div class="footer-contact">
+                    <h4 class="text-white">Contactos</h4>
+                    <ul>
+                        <li>Call 112</li>
+                        <li>E-mail: apoio.inema@gmail.com</li>
+                        <li>Mutamba C/C - Edifício</li>
                     </ul>
                 </div>
-                <div class="footer-col">
-                    <h4>Newsletter</h4>
-                    <div class="newsletter">
-                        <input type="text" placeholder="Seu e-mail aqui">
-                        <button><i class="fa-solid fa-paper-plane"></i></button>
-                    </div>
+
+                <div class="footer-newsletter">
+                    <h4 class="text-white">Newsletter</h4>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Digita o seu email..." required>
+                        <button type="submit" class="btn-send"><i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 INEMA - AO | Todos os direitos reservados</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
                 </div>
             </div>
         </div>
     </footer>
 
+    <script src="assets/js/main.js"></script>
 </body>
+
 </html>
