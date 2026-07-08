@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="../assets/css/variables.css">
     <link rel="stylesheet" href="../assets/css/main.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.1.5/jspdf.plugin.autotable.min.js"></script>
     
     <style>
         .table-card { padding: 3rem; border-radius: 1.5rem; }
@@ -190,8 +192,9 @@
                             <span class="stat-badge">${base.total_processadas} Atendimentos</span>
                         </td>
                         <td style="text-align: center;">
-                            <button class="action-btn" onclick="openEdit(${base.id})" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                            <button class="action-btn" onclick="deleteBase(${base.id})" title="Eliminar" style="margin-left: 0.5rem; color: #ef4444;"><i class="fa-solid fa-trash"></i></button>
+                            <button class="action-btn" onclick="generateBaseReport(${base.id})" title="Gerar relatório PDF" style="color: #2563eb;"><i class="fa-solid fa-file-pdf"></i></button>
+                            <button class="action-btn" onclick="openEdit(${base.id})" title="Editar" style="margin-left: 0.25rem;"><i class="fa-solid fa-pen"></i></button>
+                            <button class="action-btn" onclick="deleteBase(${base.id})" title="Eliminar" style="margin-left: 0.25rem; color: #ef4444;"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 `).join('');
@@ -248,6 +251,264 @@
             } else {
                 showMessage(res.message, 'error');
             }
+        }
+
+        async function generateBaseReport(id) {
+            const base = allBases.find(b => b.id == id);
+            if (!base) {
+                showMessage('Base não encontrada.', 'error');
+                return;
+            }
+
+            showMessage('A gerar relatório em PDF...', 'success');
+
+            try {
+                const [vehiclesRes, occurrencesRes] = await Promise.all([
+                    ApiClient.get('admin.php?action=get_all_vehicles'),
+                    ApiClient.get('admin.php?action=get_all_occurrences')
+                ]);
+
+                const vehicles = (vehiclesRes.success ? vehiclesRes.data : []).filter(v => v.base_id == id);
+                const occurrences = (occurrencesRes.success ? occurrencesRes.data : []).filter(o => o.base_atribuida_id == id);
+
+                if (window.jspdf && window.jspdf.jsPDF) {
+                    createProfessionalPdf(base, vehicles, occurrences);
+                } else {
+                    openPrintableReport(base, vehicles, occurrences);
+                }
+            } catch (error) {
+                console.error('Erro ao gerar relatório:', error);
+                showMessage('Não foi possível gerar o relatório.', 'error');
+            }
+        }
+
+        function drawTable(doc, startY, headers, rows, margin = 40) {
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const tableWidth = pageWidth - (margin * 2);
+            const columnCount = headers.length;
+            const columnWidth = tableWidth / columnCount;
+            const rowHeight = 18;
+            const headerHeight = 22;
+            let y = startY;
+
+            const ensureSpace = (neededHeight) => {
+                if (y + neededHeight > pageHeight - 40) {
+                    doc.addPage();
+                    y = 40;
+                }
+            };
+
+            ensureSpace(headerHeight + (rows.length * rowHeight) + 10);
+
+            doc.setFillColor(35, 44, 95);
+            doc.rect(margin, y, tableWidth, headerHeight, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
+            headers.forEach((header, index) => {
+                doc.text(String(header), margin + 6, y + 14);
+                if (index < headers.length - 1) {
+                    doc.line(margin + (index + 1) * columnWidth, y, margin + (index + 1) * columnWidth, y + headerHeight);
+                }
+            });
+
+            y += headerHeight;
+            doc.setTextColor(35, 44, 95);
+            doc.setFont('helvetica', 'normal');
+            rows.forEach((row, rowIndex) => {
+                ensureSpace(rowHeight);
+                const rowY = y + (rowIndex * rowHeight);
+                doc.setFillColor(rowIndex % 2 === 0 ? 250 : 245);
+                doc.rect(margin, rowY, tableWidth, rowHeight, 'F');
+                doc.setDrawColor(225, 230, 240);
+                doc.rect(margin, rowY, tableWidth, rowHeight, 'S');
+                row.forEach((cell, index) => {
+                    const cellX = margin + (index * columnWidth);
+                    doc.text(String(cell), cellX + 4, rowY + 12);
+                    if (index < row.length - 1) {
+                        doc.line(cellX + columnWidth, rowY, cellX + columnWidth, rowY + rowHeight);
+                    }
+                });
+            });
+
+            return y + (rows.length * rowHeight) + 10;
+        }
+
+        function createProfessionalPdf(base, vehicles, occurrences) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 40;
+
+            doc.setFillColor(35, 44, 95);
+            doc.rect(0, 0, pageWidth, 90, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(20);
+            doc.text('Relatório da Base Operacional', margin, 44);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Emitido em ${new Date().toLocaleString('pt-PT')}`, margin, 68);
+
+            doc.setTextColor(35, 44, 95);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(14);
+            doc.text('Dados principais da base', margin, 125);
+            doc.setDrawColor(229, 232, 240);
+            doc.line(margin, 132, pageWidth - margin, 132);
+
+            const summaryRows = [
+                ['Nome da base', base.nome_base || 'Não informado'],
+                ['Tipo', base.tipo_base === 'hospitalar' ? 'Com Hospital' : 'Sem Hospital'],
+                ['Município', base.municipio || 'Não informado'],
+                ['Endereço', base.endereco || 'Não informado'],
+                ['Capacidade', `${base.capacidade || 0} pessoas`],
+                ['E-mail institucional', base.email_institucional || 'Não informado']
+            ];
+
+            let y = drawTable(doc, 145, ['Campo', 'Valor'], summaryRows, margin);
+            y += 24;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(14);
+            doc.text('Resumo operacional', margin, y);
+            doc.setDrawColor(229, 232, 240);
+            doc.line(margin, y + 7, pageWidth - margin, y + 7);
+
+            y += 26;
+            doc.setFillColor(245, 247, 250);
+            doc.roundedRect(margin, y, 220, 60, 8, 8, 'F');
+            doc.setTextColor(35, 44, 95);
+            doc.setFontSize(11);
+            doc.text('Viaturas registadas', margin + 16, y + 22);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(18);
+            doc.text(String(vehicles.length), margin + 16, y + 44);
+
+            doc.setFillColor(245, 247, 250);
+            doc.roundedRect(margin + 240, y, 220, 60, 8, 8, 'F');
+            doc.setTextColor(35, 44, 95);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(11);
+            doc.text('Ocorrências associadas', margin + 256, y + 22);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(18);
+            doc.text(String(occurrences.length), margin + 256, y + 44);
+
+            y += 95;
+            if (vehicles.length > 0) {
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.text('Viaturas', margin, y);
+                y += 12;
+                y = drawTable(doc, y, ['Placa', 'Modelo', 'Tipo', 'Estado'], vehicles.map(v => [v.placa || '-', v.modelo || '-', formatVehicleType(v.tipo_suporte), formatVehicleStatus(v.status_vtr)]), margin);
+                y += 20;
+            } else {
+                y += 10;
+            }
+
+            if (occurrences.length > 0) {
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.text('Ocorrências', margin, y);
+                y += 12;
+                y = drawTable(doc, y, ['ID', 'Categoria', 'Status', 'Localização', 'Vítimas'], occurrences.map(o => [String(o.id), o.nome_categoria || '-', formatStatus(o.status), o.localizacao_texto || '-', String(o.num_vitimas || 1)]), margin);
+            } else {
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                doc.text('Não existem ocorrências associadas a esta base.', margin, y + 16);
+            }
+
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(9);
+            doc.setTextColor(107, 114, 128);
+            doc.text('Documento gerado automaticamente pelo sistema INEMA Central.', margin, doc.internal.pageSize.height - 30);
+
+            const slug = (base.nome_base || 'base').toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '');
+
+            doc.save(`relatorio-${slug || 'base'}.pdf`);
+        }
+
+        function openPrintableReport(base, vehicles, occurrences) {
+            const content = `
+                <html>
+                    <head>
+                        <title>Relatório - ${base.nome_base}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; color: #232c5f; margin: 24px; }
+                            h1 { color: #232c5f; margin-bottom: 8px; }
+                            .header { background: #232c5f; color: white; padding: 20px; border-radius: 8px; }
+                            .section { margin-top: 20px; }
+                            table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+                            th, td { border: 1px solid #dbe3ef; padding: 8px; text-align: left; }
+                            th { background: #f5f7fa; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>Relatório da Base Operacional</h1>
+                            <p>${base.nome_base}</p>
+                        </div>
+                        <div class="section">
+                            <h2>Dados principais</h2>
+                            <p><strong>Tipo:</strong> ${base.tipo_base === 'hospitalar' ? 'Com Hospital' : 'Sem Hospital'}</p>
+                            <p><strong>Município:</strong> ${base.municipio || 'Não informado'}</p>
+                            <p><strong>Endereço:</strong> ${base.endereco || 'Não informado'}</p>
+                            <p><strong>Capacidade:</strong> ${base.capacidade || 0}</p>
+                            <p><strong>E-mail institucional:</strong> ${base.email_institucional || 'Não informado'}</p>
+                        </div>
+                        <div class="section">
+                            <h2>Viaturas</h2>
+                            <table>
+                                <thead><tr><th>Placa</th><th>Modelo</th><th>Tipo</th><th>Estado</th></tr></thead>
+                                <tbody>
+                                    ${vehicles.length ? vehicles.map(v => `<tr><td>${v.placa || '-'}</td><td>${v.modelo || '-'}</td><td>${formatVehicleType(v.tipo_suporte)}</td><td>${formatVehicleStatus(v.status_vtr)}</td></tr>`).join('') : '<tr><td colspan="4">Nenhuma viatura registada.</td></tr>'}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="section">
+                            <h2>Ocorrências</h2>
+                            <table>
+                                <thead><tr><th>ID</th><th>Categoria</th><th>Status</th><th>Localização</th><th>Vítimas</th></tr></thead>
+                                <tbody>
+                                    ${occurrences.length ? occurrences.map(o => `<tr><td>${o.id}</td><td>${o.nome_categoria || '-'}</td><td>${formatStatus(o.status)}</td><td>${o.localizacao_texto || '-'}</td><td>${o.num_vitimas || 1}</td></tr>`).join('') : '<tr><td colspan="5">Nenhuma ocorrência associada.</td></tr>'}
+                                </tbody>
+                            </table>
+                        </div>
+                    </body>
+                </html>
+            `;
+            const printWindow = window.open('', '_blank', 'width=900,height=700');
+            printWindow.document.write(content);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => printWindow.print(), 500);
+        }
+
+        function formatVehicleType(type) {
+            const map = { basico: 'Básico', medio: 'Médio', avancado: 'Avançado' };
+            return map[type] || type || '-';
+        }
+
+        function formatVehicleStatus(status) {
+            const map = { disponivel: 'Disponível', em_missao: 'Em missão', manutencao: 'Manutenção' };
+            return map[status] || status || '-';
+        }
+
+        function formatStatus(status) {
+            const map = {
+                pendente: 'Pendente',
+                aprovada: 'Aprovada',
+                rejeitada: 'Rejeitada',
+                despachada: 'Despachada',
+                em_curso: 'Em curso',
+                concluida: 'Concluída',
+                cancelada: 'Cancelada'
+            };
+            return map[status] || status || '-';
         }
 
         function showMessage(msg, type) {

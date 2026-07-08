@@ -1,35 +1,66 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INEMA Base - Gestão de Frota</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/variables.css">
     <link rel="stylesheet" href="../assets/css/main.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
-    
+
     <style>
-        .vtr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-        .vtr-card { border-left: 5px solid #10b981; }
-        .vtr-card.em_missao { border-left-color: #3b82f6; }
-        .vtr-card.manutencao { border-left-color: #ef4444; }
-        
-        .status-badge {
-            padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+        .vtr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
-        .status-disponivel { background: #dcfce7; color: #166534; }
-        .status-em_missao { background: #dbeafe; color: #1e40af; }
-        .status-manutencao { background: #fef2f2; color: #991b1b; }
+
+        .vtr-card {
+            border-left: 5px solid #10b981;
+        }
+
+        .vtr-card.em_missao {
+            border-left-color: #3b82f6;
+        }
+
+        .vtr-card.manutencao {
+            border-left-color: #ef4444;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .status-disponivel {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-em_missao {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-manutencao {
+            background: #fef2f2;
+            color: #991b1b;
+        }
     </style>
 </head>
+
 <body>
     <div class="dashboard-layout">
         <aside class="sidebar sidebar-base">
@@ -40,6 +71,9 @@
             <nav class="nav-menu">
                 <a href="dashboard.html" class="nav-link">
                     <i class="fa-solid fa-bell"></i> Despacho
+                </a>
+                <a href="atendimentos.html" class="nav-link">
+                    <i class="fa-solid fa-clipboard-list"></i> Atendimentos
                 </a>
                 <a href="viaturas.html" class="nav-link active">
                     <i class="fa-solid fa-ambulance"></i> Frota
@@ -70,7 +104,8 @@
     </div>
 
     <!-- Modal Adicionar/Editar -->
-    <div id="vtrModal" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div id="vtrModal"
+        style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
         <div class="card" style="width: 100%; max-width: 500px; padding: 2rem;">
             <h3 id="modalTitle" style="margin-bottom: 1.5rem; color: #232c5f;">Nova Viatura</h3>
             <form id="vtrForm">
@@ -81,7 +116,8 @@
                 </div>
                 <div class="form-group" style="margin-bottom: 1rem;">
                     <label style="display:block; font-size: 0.8rem; font-weight: 700;">Modelo</label>
-                    <input type="text" id="vtr_modelo" class="form-control" placeholder="Toyota Land Cruiser / Mercedes" required>
+                    <input type="text" id="vtr_modelo" class="form-control" placeholder="Toyota Land Cruiser / Mercedes"
+                        required>
                 </div>
                 <div class="form-group" style="margin-bottom: 1.5rem;">
                     <label style="display:block; font-size: 0.8rem; font-weight: 700;">Tipo de Suporte</label>
@@ -92,8 +128,10 @@
                     </select>
                 </div>
                 <div style="display: flex; gap: 1rem;">
-                    <button type="button" onclick="closeModal()" style="flex: 1; padding: 0.75rem; border: none; border-radius: 0.5rem; cursor: pointer;">Cancelar</button>
-                    <button type="submit" style="flex: 1; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Salvar</button>
+                    <button type="button" onclick="closeModal()"
+                        style="flex: 1; padding: 0.75rem; border: none; border-radius: 0.5rem; cursor: pointer;">Cancelar</button>
+                    <button type="submit"
+                        style="flex: 1; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Salvar</button>
                 </div>
             </form>
         </div>
@@ -117,7 +155,7 @@
         async function loadFleet() {
             const res = await ApiClient.get('base.php?action=get_my_fleet');
             const grid = document.getElementById('vtrGrid');
-            
+
             if (res.success) {
                 if (res.data.length === 0) {
                     grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 3rem;">Nenhuma viatura registada nesta base.</p>';
@@ -186,4 +224,5 @@
         }
     </script>
 </body>
+
 </html>
