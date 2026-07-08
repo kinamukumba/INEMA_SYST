@@ -154,12 +154,32 @@
             const res = await ApiClient.get('utente.php?action=get_categories');
             if (res.success) {
                 const grid = document.getElementById('categoryGrid');
-                grid.innerHTML = res.data.map(cat => `
+
+                // Mapa de ícones e cores por nome de categoria
+                const iconMap = {
+                    'acidente':                 { icon: 'fa-car-burst',          color: '#ef4444' },
+                    'queda grave':              { icon: 'fa-person-falling',     color: '#f97316' },
+                    'parto inesperado':         { icon: 'fa-baby',               color: '#ec4899' },
+                    'afogamento':               { icon: 'fa-person-swimming',    color: '#3b82f6' },
+                    'incêndio':                 { icon: 'fa-fire',               color: '#f59e0b' },
+                    'desastre natural':         { icon: 'fa-house-tsunami',      color: '#8b5cf6' },
+                    'picada de animal venenoso':{ icon: 'fa-spider',             color: '#10b981' },
+                    'paragem cardíaca':         { icon: 'fa-heart-pulse',        color: '#ef4444' }
+                };
+
+                grid.innerHTML = res.data.map(cat => {
+                    const key  = cat.nome_categoria.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+                    const meta = Object.entries(iconMap).find(([k]) =>
+                        key.includes(k.normalize('NFD').replace(/[\u0300-\u036f]/g,''))
+                    );
+                    const { icon = 'fa-kit-medical', color = 'var(--primary-blue)' } = meta ? meta[1] : {};
+
+                    return `
                     <div class="type-card" onclick="selectCategory(${cat.id}, this)">
-                        <i class="fa-solid fa-kit-medical"></i>
+                        <i class="fa-solid ${icon}" style="color:${color};"></i>
                         <h3>${cat.nome_categoria}</h3>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
             }
         }
 

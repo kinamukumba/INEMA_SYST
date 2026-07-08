@@ -1,355 +1,745 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INEMA - Acompanhamento em Tempo Real</title>
-    
-    <!-- Fonts -->
+    <meta name="description" content="Acompanhe o estado e a localização da equipa de emergência em tempo real.">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+    <!-- Leaflet Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/variables.css">
     <link rel="stylesheet" href="../assets/css/main.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
-    
+
     <style>
+        /* ============================
+           ACOMPANHAMENTO PAGE STYLES
+           ============================ */
+
+        /* ---- Status Banner ---- */
+        .status-banner {
+            padding: 1.25rem 3rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            border-bottom: 1px solid #f1f5f9;
+            background: white;
+        }
+
+        .status-icon-bubble {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .bubble-pending    { background: #fef3c7; color: #d97706; }
+        .bubble-dispatched { background: #dbeafe; color: #2563eb; }
+        .bubble-onway      { background: #ede9fe; color: #7c3aed; }
+        .bubble-onsite     { background: #dcfce7; color: #16a34a; }
+        .bubble-done       { background: #e0f2fe; color: #0284c7; }
+
+        .status-text h3 {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #232c5f;
+        }
+
+        .status-text p {
+            font-size: 0.8rem;
+            color: #8c909c;
+            font-weight: 600;
+            margin-top: 0.15rem;
+        }
+
+        .pulse-badge {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f0fdf4;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: dotPulse 1.5s infinite;
+        }
+
+        @keyframes dotPulse {
+            0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
+            100% { box-shadow: 0 0 0 10px rgba(16,185,129,0); }
+        }
+
+        .pulse-badge span {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #10b981;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ---- Map ---- */
         .map-container {
-            height: 500px;
+            height: 420px;
             width: 100%;
             border-radius: 1.25rem;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.07);
             margin-bottom: 2rem;
             position: relative;
         }
 
         #map { height: 100%; width: 100%; z-index: 1; }
 
-        .map-overlay-info {
+        .map-vtr-pill {
             position: absolute;
-            top: 2rem;
-            left: 2rem;
+            top: 1.25rem;
+            left: 1.25rem;
             z-index: 10;
             background: white;
-            padding: 0.75rem 1.5rem;
+            padding: 0.6rem 1.25rem;
             border-radius: 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            border: 1px solid #eee;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #232c5f;
         }
 
-        .pulse-dot {
-            width: 12px;
-            height: 12px;
-            background-color: #2e7d32;
-            border-radius: 50%;
-            position: relative;
-        }
-
-        .pulse-dot::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-color: inherit;
-            border-radius: 50%;
-            animation: dotPulse 1.5s infinite;
-        }
-
-        @keyframes dotPulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(2.5); opacity: 0; }
-        }
-
-        .tracking-details {
+        /* ---- Info Grid ---- */
+        .tracking-grid {
             display: grid;
-            grid-template-columns: 1fr 1.5fr 1fr;
-            gap: 2rem;
-            align-items: center;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .detail-item {
+        .track-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9;
             display: flex;
             align-items: center;
             gap: 1.25rem;
         }
 
-        .detail-item .icon-box {
-            width: 50px;
-            height: 50px;
-            background-color: #f0f2f5;
-            border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: var(--primary-blue);
-        }
-
-        .detail-label {
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            margin-bottom: 0.25rem;
-        }
-
-        .detail-value {
-            font-size: 1rem;
-            font-weight: 800;
-            color: var(--primary-blue);
-        }
-
-        .tracking-header {
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .occ-badge {
-            width: 45px;
-            height: 45px;
-            background-color: #fef2f2;
-            color: #ef4444;
-            border-radius: 0.75rem;
+        .track-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.875rem;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.25rem;
+            flex-shrink: 0;
         }
 
-        .custom-marker {
-            background: none;
-            border: none;
+        .track-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8c909c;
+            margin-bottom: 0.3rem;
         }
 
-        .ambulance-icon {
-            font-size: 2.5rem;
-            color: #ef4444;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        .track-value {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #232c5f;
         }
 
-        .user-location-icon {
-            font-size: 1.5rem;
-            color: var(--primary-blue);
+        /* ---- Detail Panel ---- */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .panel-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.75rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9;
+        }
+
+        .panel-card h4 {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8c909c;
+            margin-bottom: 1.25rem;
+        }
+
+        /* Timeline */
+        .timeline-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .timeline-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .step-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .step-circle.done    { background: #10b981; border-color: #10b981; color: white; }
+        .step-circle.current { background: #232c5f; border-color: #232c5f; color: white; animation: stepPulse 2s infinite; }
+        .step-circle.pending { background: #f8fafc; border-color: #e2e8f0; color: #94a3b8; }
+
+        @keyframes stepPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(35,44,95,0.3); }
+            50%       { box-shadow: 0 0 0 8px rgba(35,44,95,0); }
+        }
+
+        .step-line {
+            width: 2px;
+            height: 40px;
+            background: #e2e8f0;
+            margin: 0 auto;
+        }
+
+        .step-line.done { background: #10b981; }
+
+        .step-content {
+            padding-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        .step-content p {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #232c5f;
+            margin-bottom: 0.15rem;
+        }
+
+        .step-content small {
+            font-size: 0.75rem;
+            color: #8c909c;
+            font-weight: 600;
+        }
+
+        /* Resources */
+        .recurso-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #f0f9ff;
+            color: #0c4a6e;
+            padding: 0.35rem 0.85rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin: 0.25rem;
+        }
+
+        /* Final Report */
+        .relatorio-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            font-size: 0.875rem;
+            color: #334155;
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        /* ---- No occurrence state ---- */
+        .no-occ-state {
+            text-align: center;
+            padding: 5rem 2rem;
+        }
+
+        .no-occ-state .big-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.2;
+        }
+
+        /* Ambulance & User Map Icons */
+        .custom-marker { background: none; border: none; }
+        .ambulance-icon { font-size: 2.5rem; color: #ef4444; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
+        .user-loc-icon  { font-size: 1.75rem; color: #232c5f; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .tracking-grid { grid-template-columns: 1fr 1fr; }
+            .detail-grid   { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .tracking-grid  { grid-template-columns: 1fr; }
+            .status-banner  { flex-wrap: wrap; padding: 1rem 1.5rem; }
+            .pulse-badge    { margin-left: 0; }
+            .sidebar        { display: none; }
+            .main-content   { margin-left: 0; }
+            .content-wrapper { padding: 1.5rem; }
         }
     </style>
 </head>
 <body>
     <div class="dashboard-layout">
+        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <i class="fa-solid fa-asterisk"></i>
                 <span>INEMA</span>
             </div>
             <nav class="nav-menu">
-                <a href="index.html" class="nav-link">
-                    <i class="fa-solid fa-house"></i> Início
-                </a>
-                <a href="pedir_ajuda.html" class="nav-link">
-                    <i class="fa-solid fa-circle-exclamation"></i> Nova Ocorrência
-                </a>
-                <a href="acompanhamento.html" class="nav-link active">
-                    <i class="fa-solid fa-map-location-dot"></i> Acompanhamento
-                </a>
-                <a href="perfil.html" class="nav-link">
-                    <i class="fa-solid fa-user"></i> O Meu Perfil
-                </a>
-                <a href="../login.html" class="nav-link logout">
-                    <i class="fa-solid fa-right-from-bracket"></i> Sair
-                </a>
+                <a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Início</a>
+                <a href="pedir_ajuda.html" class="nav-link"><i class="fa-solid fa-circle-exclamation"></i> Nova Ocorrência</a>
+                <a href="acompanhamento.html" class="nav-link active"><i class="fa-solid fa-map-location-dot"></i> Acompanhamento</a>
+                <a href="perfil.html" class="nav-link"><i class="fa-solid fa-user"></i> O Meu Perfil</a>
+                <a href="../login.html" class="nav-link logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
             </nav>
         </aside>
 
+        <!-- Main -->
         <main class="main-content">
+            <!-- Top Bar -->
             <header class="top-bar">
-                <div class="tracking-header">
-                    <div class="occ-badge">
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <div style="width:42px;height:42px;background:#fef2f2;border-radius:0.75rem;display:flex;align-items:center;justify-content:center;color:#ef4444;font-size:1.2rem;">
                         <i class="fa-solid fa-truck-medical"></i>
                     </div>
                     <div>
-                        <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-blue); margin: 0;" id="occNumber">Procurando Ocorrência...</h2>
-                        <p style="font-size: 0.8rem; font-weight: 700; color: #ef4444; margin: 0;" id="occStatus">Aguardando dados</p>
+                        <h2 style="font-size:1rem;font-weight:800;color:var(--primary-blue);margin:0;" id="occNumber">Ocorrência</h2>
+                        <p style="font-size:0.75rem;font-weight:700;color:#ef4444;margin:0;" id="occCategory">A carregar...</p>
                     </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div style="text-align: right;">
-                        <p style="font-size: 0.85rem; font-weight: 800; color: var(--primary-blue);" id="userFullName">Carregando...</p>
-                        <p style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Cidadão</p>
+                <div style="display:flex;align-items:center;gap:1rem;">
+                    <div style="text-align:right;">
+                        <p style="font-size:0.85rem;font-weight:800;color:var(--primary-blue);" id="userFullName">Cidadão</p>
+                        <p style="font-size:0.7rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Cidadão</p>
                     </div>
-                    <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: var(--text-muted);"><i class="fa-solid fa-user"></i></div>
+                    <div style="width:42px;height:42px;border-radius:50%;background:#f0f2f5;display:flex;align-items:center;justify-content:center;color:var(--text-muted);">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
                 </div>
             </header>
 
-            <div class="content-wrapper">
-                <div class="map-container">
-                    <div class="map-overlay-info">
-                        <div class="pulse-dot"></div>
-                        <span style="font-weight: 800; font-size: 0.9rem; color: var(--primary-blue);">Viatura LD-44-55 em Deslocação!</span>
-                    </div>
-                    <div id="map"></div>
+            <!-- Status Banner -->
+            <div class="status-banner" id="statusBanner" style="display:none;">
+                <div class="status-icon-bubble bubble-pending" id="statusBubble">
+                    <i class="fa-solid fa-hourglass-half" id="statusBubbleIcon"></i>
                 </div>
-
-                <div class="card tracking-details">
-                    <div class="detail-item">
-                        <div class="icon-box">
-                            <i class="fa-solid fa-clock"></i>
-                        </div>
-                        <div>
-                            <p class="detail-label">Tempo Estimado</p>
-                            <p class="detail-value" id="occTime">-- Min(s)</p>
-                        </div>
-                    </div>
-
-                    <div class="detail-item">
-                        <div class="icon-box">
-                            <i class="fa-solid fa-ambulance"></i>
-                        </div>
-                        <div>
-                            <p class="detail-label">Equipa & Viatura</p>
-                            <p class="detail-value" id="occResources">Aguardando atribuição</p>
-                        </div>
-                    </div>
-
-                    <div class="detail-item">
-                        <div class="icon-box">
-                            <i class="fa-solid fa-location-dot"></i>
-                        </div>
-                        <div>
-                            <p class="detail-label">Sua Localização GPS</p>
-                            <p class="detail-value" id="occLocation">Carregando...</p>
-                        </div>
-                    </div>
+                <div class="status-text">
+                    <h3 id="statusLabel">A aguardar triagem...</h3>
+                    <p id="statusSubLabel">A sua solicitação foi recebida</p>
+                </div>
+                <div class="pulse-badge">
+                    <div class="pulse-dot"></div>
+                    <span>Em directo</span>
                 </div>
             </div>
+
+            <div class="content-wrapper" id="mainContent">
+                <!-- Loading State -->
+                <div id="loadingState" style="text-align:center;padding:4rem;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size:2.5rem;color:#8c909c;"></i>
+                    <p style="margin-top:1rem;color:#8c909c;font-weight:600;">A procurar a sua ocorrência...</p>
+                </div>
+
+                <!-- No Occurrence -->
+                <div id="noOccState" class="no-occ-state" style="display:none;">
+                    <div class="big-icon"><i class="fa-solid fa-circle-check" style="color:#10b981;"></i></div>
+                    <h3 style="font-size:1.25rem;font-weight:800;color:#232c5f;margin-bottom:0.5rem;">Sem ocorrências activas</h3>
+                    <p style="color:#8c909c;font-weight:600;margin-bottom:2rem;">Não tem nenhuma solicitação de emergência em curso no momento.</p>
+                    <a href="pedir_ajuda.html" style="background:#232c5f;color:white;padding:0.9rem 2rem;border-radius:0.75rem;font-weight:700;font-size:0.9rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.75rem;">
+                        <i class="fa-solid fa-circle-exclamation"></i> Solicitar Ajuda Agora
+                    </a>
+                </div>
+
+                <!-- Main Tracking Content (hidden until loaded) -->
+                <div id="trackingContent" style="display:none;">
+
+                    <!-- MAP -->
+                    <div class="map-container">
+                        <div class="map-vtr-pill" id="mapVtrPill">
+                            <i class="fa-solid fa-ambulance" style="color:#ef4444;"></i>
+                            <span id="mapVtrText">Aguardando viatura...</span>
+                        </div>
+                        <div id="map"></div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="tracking-grid">
+                        <div class="track-card">
+                            <div class="track-icon" style="background:#fef3c7;color:#d97706;">
+                                <i class="fa-solid fa-clock"></i>
+                            </div>
+                            <div>
+                                <p class="track-label">Hora de Despacho</p>
+                                <p class="track-value" id="tDespacho">—</p>
+                            </div>
+                        </div>
+                        <div class="track-card">
+                            <div class="track-icon" style="background:#dcfce7;color:#16a34a;">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div>
+                                <p class="track-label">Hora de Chegada</p>
+                                <p class="track-value" id="tChegada">—</p>
+                            </div>
+                        </div>
+                        <div class="track-card">
+                            <div class="track-icon" style="background:#e0f2fe;color:#0284c7;">
+                                <i class="fa-solid fa-flag-checkered"></i>
+                            </div>
+                            <div>
+                                <p class="track-label">Hora de Conclusão</p>
+                                <p class="track-value" id="tConclusao">—</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detail Panel -->
+                    <div class="detail-grid">
+
+                        <!-- Left: Team + Resources + Report -->
+                        <div class="panel-card">
+                            <h4><i class="fa-solid fa-ambulance" style="margin-right:0.4rem;"></i> Equipa Designada</h4>
+                            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.75rem;padding-bottom:1.5rem;border-bottom:1px solid #f1f5f9;">
+                                <div style="width:44px;height:44px;border-radius:0.75rem;background:#f0f2f5;display:flex;align-items:center;justify-content:center;color:#232c5f;font-size:1.1rem;flex-shrink:0;">
+                                    <i class="fa-solid fa-user-nurse"></i>
+                                </div>
+                                <div>
+                                    <p style="font-weight:800;color:#232c5f;font-size:0.9rem;" id="teamName">Aguardando...</p>
+                                    <p style="font-size:0.8rem;color:#8c909c;font-weight:600;" id="vtrInfo">—</p>
+                                </div>
+                            </div>
+
+                            <!-- Base info -->
+                            <div style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid #f1f5f9;" id="baseSection">
+                                <p style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#8c909c;margin-bottom:0.75rem;">Base Responsável</p>
+                                <div style="display:flex;align-items:center;gap:0.75rem;">
+                                    <i class="fa-solid fa-building-shield" style="color:#232c5f;"></i>
+                                    <div>
+                                        <p style="font-weight:800;font-size:0.875rem;color:#232c5f;" id="baseName">—</p>
+                                        <p style="font-size:0.75rem;color:#8c909c;font-weight:600;" id="baseTipo">—</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Resources -->
+                            <div id="recursosSection" style="display:none;">
+                                <p style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#8c909c;margin-bottom:0.75rem;">Recursos Utilizados</p>
+                                <div id="recursoChips"></div>
+                            </div>
+
+                            <!-- Final Report -->
+                            <div id="relatorioSection" style="display:none;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid #f1f5f9;">
+                                <p style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#8c909c;margin-bottom:0.75rem;">Relatório Médico</p>
+                                <div class="relatorio-box" id="relatorioText"></div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Timeline -->
+                        <div class="panel-card">
+                            <h4><i class="fa-solid fa-timeline" style="margin-right:0.4rem;"></i> Estado da Ocorrência</h4>
+                            <div class="timeline-steps" id="timelineSteps">
+                                <!-- Rendered by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /trackingContent -->
+            </div><!-- /content-wrapper -->
         </main>
     </div>
 
-    <!-- ApiClient JS -->
     <script src="../assets/js/api.js"></script>
     <script>
         let map, userMarker, ambulanceMarker;
+        let occData = null;
 
+        // Status visual mapping
+        const statusConfig = {
+            pendente:    { label:'A aguardar triagem',      sub:'Solicitação recebida pela Central',        bubble:'bubble-pending',    icon:'fa-hourglass-half' },
+            aprovada:    { label:'Aprovada pela Central',   sub:'A aguardar despacho da Base',              bubble:'bubble-dispatched', icon:'fa-check-circle'  },
+            despachada:  { label:'Viatura Despachada!',     sub:'A equipa está a preparar-se',              bubble:'bubble-dispatched', icon:'fa-truck-fast'    },
+            em_curso:    { label:'Equipa No Local!',        sub:'Estão a prestar-lhe assistência médica',   bubble:'bubble-onsite',     icon:'fa-location-dot'  },
+            concluida:   { label:'Atendimento Concluído',   sub:'A ocorrência foi fechada com sucesso',     bubble:'bubble-done',       icon:'fa-circle-check'  }
+        };
+
+        const atendStatusConfig = {
+            despachado: { label:'Despachado',  sub:'Viatura despachada da base',      icon:'fa-truck-fast',     done: false },
+            a_caminho:  { label:'A Caminho',   sub:'Em deslocação para o local',      icon:'fa-route',          done: false },
+            no_local:   { label:'No Local',    sub:'Equipa chegou ao local',          icon:'fa-location-dot',   done: false },
+            concluido:  { label:'Concluído',   sub:'Atendimento encerrado',           icon:'fa-circle-check',   done: false }
+        };
+
+        // =====================
+        // INIT
+        // =====================
         document.addEventListener('DOMContentLoaded', async () => {
             const user = await loadUserData();
             if (user) {
                 document.getElementById('userFullName').textContent = user.nome;
             }
-            
+
             initMap();
-            loadOccurrenceData();
-            
-            // Atualizar a cada 10 segundos
+            await loadOccurrenceData();
             setInterval(loadOccurrenceData, 10000);
         });
 
+        // =====================
+        // MAP
+        // =====================
         function initMap() {
             map = L.map('map').setView([-8.8354, 13.2389], 14);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
+                attribution: '© OpenStreetMap'
             }).addTo(map);
 
             const userIcon = L.divIcon({
-                html: '<i class="fa-solid fa-location-dot user-location-icon"></i>',
+                html: '<i class="fa-solid fa-location-dot user-loc-icon"></i>',
                 className: 'custom-marker',
-                iconSize: [30, 30],
-                iconAnchor: [15, 30]
+                iconSize: [30, 40], iconAnchor: [15, 40]
             });
-            userMarker = L.marker([-8.8354, 13.2389], {icon: userIcon}).addTo(map)
-                .bindPopup('Sua localização de emergência');
+            userMarker = L.marker([-8.8354, 13.2389], { icon: userIcon })
+                .addTo(map)
+                .bindPopup('A sua localização de emergência');
         }
 
+        // =====================
+        // LOAD DATA
+        // =====================
         async function loadOccurrenceData() {
             const res = await ApiClient.get('utente.php?action=get_active_occurrence');
-            
-            if (res.success) {
-                const occ = res.data;
-                document.getElementById('occNumber').textContent = `Ocorrência #${occ.id}`;
-                
-                // Status formatado
-                const statusMap = {
-                    'pendente': 'Aguardando Triagem...',
-                    'aprovada': 'Aprovada! Aguardando Viatura...',
-                    'despachada': 'Viatura em Caminho!',
-                    'em_curso': 'Atendimento em Curso',
-                };
-                document.getElementById('occStatus').textContent = statusMap[occ.status] || occ.status;
-                document.getElementById('occLocation').textContent = `${occ.localizacao_texto}`;
-                
-                // Centralizar mapa se tiver coordenadas
-                if (occ.latitude && occ.longitude && userMarker) {
-                    const pos = [parseFloat(occ.latitude), parseFloat(occ.longitude)];
-                    userMarker.setLatLng(pos);
-                    map.setView(pos, 15);
-                }
 
-                // Mostrar Base Responsável e Viatura
-                if (occ.vtr_placa) {
-                    document.getElementById('occResources').textContent = `${occ.vtr_placa} - ${occ.vtr_modelo}`;
-                    document.querySelector('.map-overlay-info span').textContent = `Viatura ${occ.vtr_placa} em Deslocação!`;
-                    document.getElementById('occTime').textContent = "8-12 min";
-                    showAmbulanceSimulation(parseFloat(occ.latitude), parseFloat(occ.longitude), occ.vtr_placa);
-                } else if (occ.nome_base) {
-                    document.getElementById('occResources').textContent = `${occ.nome_base} (Preparando Envio)`;
-                    document.getElementById('occTime').textContent = "-- min";
-                } else {
-                    document.getElementById('occResources').textContent = "Aguardando Alocação";
-                    document.getElementById('occTime').textContent = "-- min";
-                }
-            } else {
-                document.getElementById('occNumber').textContent = "Sem Ocorrências Ativas";
-                document.getElementById('occStatus').textContent = "Redirecionando...";
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 4000);
+            document.getElementById('loadingState').style.display = 'none';
+
+            if (!res.success) {
+                document.getElementById('noOccState').style.display = 'block';
+                document.getElementById('trackingContent').style.display = 'none';
+                document.getElementById('statusBanner').style.display = 'none';
+                return;
             }
+
+            occData = res.data;
+
+            document.getElementById('noOccState').style.display = 'none';
+            document.getElementById('trackingContent').style.display = 'block';
+            document.getElementById('statusBanner').style.display = 'flex';
+
+            renderAll(occData);
         }
 
-        function showAmbulanceSimulation(targetLat, targetLng, placa) {
-            if (!ambulanceMarker && targetLat && targetLng) {
-                const ambulanceIcon = L.divIcon({
-                    html: '<i class="fa-solid fa-truck-medical ambulance-icon"></i>',
-                    className: 'custom-marker',
-                    iconSize: [40, 40],
-                    iconAnchor: [20, 20]
-                });
-                
-                // Começar um pouco afastado para simular o trajeto
-                let startLat = targetLat + 0.015;
-                let startLng = targetLng - 0.015;
-                
-                ambulanceMarker = L.marker([startLat, startLng], {icon: ambulanceIcon}).addTo(map)
-                    .bindPopup(`Viatura ${placa} a caminho!`);
-                
-                // Simulação de movimento suave
-                let currentLat = startLat;
-                let currentLng = startLng;
-                
-                const moveInterval = setInterval(() => {
-                    if (currentLat > targetLat) currentLat -= 0.0002;
-                    if (currentLng < targetLng) currentLng += 0.0002;
-                    
-                    ambulanceMarker.setLatLng([currentLat, currentLng]);
-                    
-                    // Parar se chegar muito perto
-                    if (Math.abs(currentLat - targetLat) < 0.0005 && Math.abs(currentLng - targetLng) < 0.0005) {
-                        clearInterval(moveInterval);
-                        ambulanceMarker.bindPopup('Viatura chegou ao local!').openPopup();
-                    }
-                }, 2000);
+        // =====================
+        // RENDER ALL
+        // =====================
+        function renderAll(occ) {
+            const fmtTime = (ts) => ts ? new Date(ts).toLocaleTimeString('pt', { hour:'2-digit', minute:'2-digit' }) : '—';
+
+            // Header
+            document.getElementById('occNumber').textContent  = `Ocorrência #${occ.id}`;
+            document.getElementById('occCategory').textContent = occ.nome_categoria;
+
+            // Status Banner
+            const sc = statusConfig[occ.status] || statusConfig['pendente'];
+            document.getElementById('statusLabel').textContent    = sc.label;
+            document.getElementById('statusSubLabel').textContent = sc.sub;
+            const bubble = document.getElementById('statusBubble');
+            bubble.className = `status-icon-bubble ${sc.bubble}`;
+            document.getElementById('statusBubbleIcon').className = `fa-solid ${sc.icon}`;
+
+            // Times
+            document.getElementById('tDespacho').textContent  = occ.atendimento_despacho  ? fmtTime(occ.atendimento_despacho)  : '—';
+            document.getElementById('tChegada').textContent   = occ.atendimento_chegada   ? fmtTime(occ.atendimento_chegada)   : '—';
+            document.getElementById('tConclusao').textContent = occ.atendimento_conclusao ? fmtTime(occ.atendimento_conclusao) : '—';
+
+            // Map
+            if (occ.latitude && occ.longitude) {
+                const pos = [parseFloat(occ.latitude), parseFloat(occ.longitude)];
+                userMarker.setLatLng(pos);
+                map.setView(pos, 15);
+
+                if (occ.vtr_placa) {
+                    showAmbulance(parseFloat(occ.latitude), parseFloat(occ.longitude), occ.vtr_placa);
+                }
             }
+
+            // Map Pill
+            document.getElementById('mapVtrText').textContent = occ.vtr_placa
+                ? `${occ.vtr_placa} — ${occ.vtr_modelo || ''}`
+                : 'Aguardando viatura...';
+
+            // Team + Vehicle
+            document.getElementById('teamName').textContent = occ.nome_equipe || 'Aguardando atribuição';
+            document.getElementById('vtrInfo').textContent  = occ.vtr_placa
+                ? `${occ.vtr_placa} · ${occ.vtr_modelo || ''}`
+                : 'Viatura ainda não atribuída';
+
+            // Base
+            if (occ.nome_base) {
+                document.getElementById('baseName').textContent = occ.nome_base;
+                document.getElementById('baseTipo').textContent = occ.tipo_base === 'hospitalar' ? 'Com Hospital' : 'Sem Hospital';
+            } else {
+                document.getElementById('baseName').textContent = '—';
+                document.getElementById('baseTipo').textContent = 'Aguardando Central';
+            }
+
+            // Resources
+            if (occ.recursos_utilizados && occ.recursos_utilizados.length > 0) {
+                document.getElementById('recursosSection').style.display = 'block';
+                document.getElementById('recursoChips').innerHTML = occ.recursos_utilizados.map(r => `
+                    <span class="recurso-chip">
+                        <i class="fa-solid fa-box-archive" style="font-size:0.75rem;"></i>
+                        ${r.nome_recurso} <strong>(${r.quantidade})</strong>
+                    </span>`).join('');
+            } else {
+                document.getElementById('recursosSection').style.display = 'none';
+            }
+
+            // Final report
+            if (occ.atendimento_relatorio) {
+                document.getElementById('relatorioSection').style.display = 'block';
+                document.getElementById('relatorioText').textContent = occ.atendimento_relatorio;
+            } else {
+                document.getElementById('relatorioSection').style.display = 'none';
+            }
+
+            // Timeline
+            renderTimeline(occ);
+        }
+
+        // =====================
+        // RENDER TIMELINE
+        // =====================
+        function renderTimeline(occ) {
+            const fmtTime = (ts) => ts ? new Date(ts).toLocaleTimeString('pt', { hour:'2-digit', minute:'2-digit' }) : '';
+
+            const steps = [
+                { key: 'registered', label: 'Solicitação Registada',   sub: fmtTime(occ.data_abertura),         icon: 'fa-circle-plus'    },
+                { key: 'approved',   label: 'Aprovada pela Central',    sub: '',                                 icon: 'fa-satellite-dish' },
+                { key: 'dispatched', label: 'Viatura Despachada',       sub: fmtTime(occ.atendimento_despacho),  icon: 'fa-truck-fast'     },
+                { key: 'on_way',     label: 'A Caminho',                sub: '',                                 icon: 'fa-route'          },
+                { key: 'on_site',    label: 'No Local',                  sub: fmtTime(occ.atendimento_chegada),   icon: 'fa-location-dot'   },
+                { key: 'done',       label: 'Concluído',                 sub: fmtTime(occ.atendimento_conclusao), icon: 'fa-circle-check'   }
+            ];
+
+            // Determine current index based on occ.status + atendimento_estado
+            const statusOrder = ['pendente','aprovada','despachada','em_curso','concluida'];
+            const atendOrder  = ['despachado','a_caminho','no_local','concluido'];
+
+            const currentStatus  = occ.status || 'pendente';
+            const currentAtend   = occ.atendimento_estado || null;
+
+            let currentStepIdx = 0;
+            if (currentStatus === 'pendente')   currentStepIdx = 0;
+            else if (currentStatus === 'aprovada') currentStepIdx = 1;
+            else if (currentStatus === 'despachada') {
+                if (currentAtend === 'a_caminho') currentStepIdx = 3;
+                else currentStepIdx = 2;
+            }
+            else if (currentStatus === 'em_curso')  currentStepIdx = 4;
+            else if (currentStatus === 'concluida') currentStepIdx = 5;
+
+            const html = steps.map((step, i) => {
+                const isDone    = i < currentStepIdx;
+                const isCurrent = i === currentStepIdx;
+                const isPending = i > currentStepIdx;
+
+                const circleClass = isDone ? 'done' : (isCurrent ? 'current' : 'pending');
+                const lineClass   = isDone ? 'done' : '';
+                const isLast      = i === steps.length - 1;
+
+                return `
+                <div class="timeline-step">
+                    <div class="step-indicator">
+                        <div class="step-circle ${circleClass}">
+                            ${isDone
+                                ? '<i class="fa-solid fa-check" style="font-size:0.7rem;"></i>'
+                                : `<i class="fa-solid ${step.icon}" style="font-size:0.7rem;"></i>`}
+                        </div>
+                        ${!isLast ? `<div class="step-line ${lineClass}"></div>` : ''}
+                    </div>
+                    <div class="step-content">
+                        <p style="${isPending ? 'color:#94a3b8;' : ''}">${step.label}</p>
+                        <small>${step.sub || (isPending ? 'A aguardar...' : '')}</small>
+                    </div>
+                </div>`;
+            }).join('');
+
+            document.getElementById('timelineSteps').innerHTML = html;
+        }
+
+        // =====================
+        // AMBULANCE SIMULATION
+        // =====================
+        function showAmbulance(targetLat, targetLng, placa) {
+            if (ambulanceMarker) return;
+
+            const ambIcon = L.divIcon({
+                html: '<i class="fa-solid fa-truck-medical ambulance-icon"></i>',
+                className: 'custom-marker',
+                iconSize: [40, 40], iconAnchor: [20, 20]
+            });
+
+            let lat = targetLat + 0.012;
+            let lng = targetLng - 0.012;
+
+            ambulanceMarker = L.marker([lat, lng], { icon: ambIcon })
+                .addTo(map)
+                .bindPopup(`Viatura ${placa} a caminho!`);
+
+            const move = setInterval(() => {
+                if (lat > targetLat) lat -= 0.0003;
+                if (lng < targetLng) lng += 0.0003;
+                ambulanceMarker.setLatLng([lat, lng]);
+
+                if (Math.abs(lat - targetLat) < 0.001 && Math.abs(lng - targetLng) < 0.001) {
+                    clearInterval(move);
+                    ambulanceMarker.bindPopup('Viatura chegou ao local!').openPopup();
+                }
+            }, 2000);
         }
     </script>
 </body>

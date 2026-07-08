@@ -1,4 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 :root {
+    /* Tipografia */
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
     /* Cores do Novo Design System */
     --primary-blue: #232c5f;
     --primary-yellow: #ebb924;
@@ -10,7 +15,11 @@
     --success: #10b981;
     --error: #ef4444;
     --warning: #f59e0b;
-    
+
+    /* Cores legadas (usadas em layout.css / reset.css) */
+    --bg-white: #ffffff;
+    --text-dark: #232c5f;
+
     /* Layout */
     --sidebar-width: 260px;
     --header-height: 80px;

@@ -35,20 +35,31 @@ if ($action === 'submit_sos') {
 
 if ($action === 'get_active_occurrence') {
     $stmt = $pdo->prepare("
-        SELECT o.*, c.nome_categoria, b.nome_base, b.municipio as base_municipio,
-               v.placa as vtr_placa, v.modelo as vtr_modelo
+        SELECT o.*, c.nome_categoria, b.nome_base, b.municipio as base_municipio, b.tipo_base,
+               v.placa as vtr_placa, v.modelo as vtr_modelo, e.nome_equipe,
+               a.id as atendimento_id, a.estado as atendimento_estado, 
+               a.data_despacho as atendimento_despacho, a.data_chegada as atendimento_chegada,
+               a.data_conclusao as atendimento_conclusao, a.relatorio_final as atendimento_relatorio
         FROM ocorrencias o 
         JOIN categorias_ocorrencia c ON o.categoria_id = c.id 
         LEFT JOIN bases b ON o.base_atribuida_id = b.id
         LEFT JOIN atendimentos a ON a.ocorrencia_id = o.id
         LEFT JOIN viaturas v ON a.viatura_id = v.id
-        WHERE o.utente_id = ? AND o.status NOT IN ('concluida', 'cancelada', 'rejeitada') 
+        LEFT JOIN equipes e ON a.equipe_id = e.id
+        WHERE o.utente_id = ? AND o.status NOT IN ('cancelada', 'rejeitada') 
         ORDER BY o.data_abertura DESC LIMIT 1
     ");
     $stmt->execute([$user_id]);
     $occ = $stmt->fetch();
     
     if ($occ) {
+        $recursos = [];
+        if ($occ['atendimento_id']) {
+            $stmt_rec = $pdo->prepare("SELECT nome_recurso, quantidade FROM recursos_atendimento WHERE atendimento_id = ? ORDER BY id ASC");
+            $stmt_rec->execute([$occ['atendimento_id']]);
+            $recursos = $stmt_rec->fetchAll();
+        }
+        $occ['recursos_utilizados'] = $recursos;
         sendResponse(true, 'Ocorrência encontrada', $occ);
     } else {
         sendResponse(false, 'Nenhuma ocorrência ativa');

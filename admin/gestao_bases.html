@@ -75,7 +75,7 @@
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <div style="text-align: right;">
                         <p style="font-size: 0.85rem; font-weight: 800; color: #232c5f;" id="adminName">Carregando...</p>
-                        <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c; text-transform: uppercase;">Administrador</p>
+                        <p style="font-size: 0.7rem; font-weight: 600; color: #8c909c; text-transform: uppercase;">Central</p>
                     </div>
                     <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #8c909c;"><i class="fa-solid fa-user"></i></div>
                 </div>
@@ -94,6 +94,7 @@
                         <thead>
                             <tr>
                                 <th>Nome da Base</th>
+                                <th>Tipo</th>
                                 <th>Província/Município</th>
                                 <th>E-mail Institucional</th>
                                 <th style="text-align: center;">Viaturas</th>
@@ -138,6 +139,13 @@
                             <label style="display:block; font-size: 0.8rem; font-weight: 700;">Endereço</label>
                             <input type="text" id="edit_endereco" class="form-control" style="width: 100%; padding: 0.5rem;" required>
                         </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label style="display:block; font-size: 0.8rem; font-weight: 700;">Tipo de Base</label>
+                            <select id="edit_tipo_base" class="form-control" style="width: 100%; padding: 0.5rem;" required>
+                                <option value="operacional">Sem Hospital (Base Operacional)</option>
+                                <option value="hospitalar">Com Hospital (Base Hospitalar)</option>
+                            </select>
+                        </div>
                         <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
                             <button type="button" onclick="closeModal()" style="flex: 1; padding: 0.75rem; border: none; border-radius: 0.5rem; cursor: pointer;">Cancelar</button>
                             <button type="submit" style="flex: 1; padding: 0.75rem; background: #232c5f; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Salvar Alterações</button>
@@ -167,13 +175,14 @@
             if (res.success) {
                 allBases = res.data;
                 if (res.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">Nenhuma base cadastrada.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 2rem;">Nenhuma base cadastrada.</td></tr>';
                     return;
                 }
 
                 tbody.innerHTML = res.data.map(base => `
                     <tr>
                         <td>${base.nome_base}</td>
+                        <td><span style="font-size:0.8rem; font-weight:700; color:${base.tipo_base === 'hospitalar' ? '#10b981' : '#f59e0b'};">${base.tipo_base === 'hospitalar' ? 'Com Hospital' : 'Sem Hospital'}</span></td>
                         <td>${base.municipio}</td>
                         <td>${base.email_institucional}</td>
                         <td style="text-align: center; color: #3b82f6;">${base.total_viaturas}</td>
@@ -198,6 +207,7 @@
                 document.getElementById('edit_municipio').value = base.municipio;
                 document.getElementById('edit_endereco').value = base.endereco;
                 document.getElementById('edit_capacidade').value = base.capacidade;
+                document.getElementById('edit_tipo_base').value = base.tipo_base || 'operacional';
                 document.getElementById('editModal').style.display = 'flex';
             }
         }
@@ -214,7 +224,8 @@
                 email_institucional: document.getElementById('edit_email').value,
                 municipio: document.getElementById('edit_municipio').value,
                 endereco: document.getElementById('edit_endereco').value,
-                capacidade: document.getElementById('edit_capacidade').value
+                capacidade: document.getElementById('edit_capacidade').value,
+                tipo_base: document.getElementById('edit_tipo_base').value
             };
 
             const res = await ApiClient.post('admin.php?action=update_base', payload);

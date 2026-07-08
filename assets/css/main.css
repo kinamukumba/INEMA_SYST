@@ -6,7 +6,7 @@
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background-color: var(--bg-body);
     color: var(--text-main);
     line-height: 1.6;
@@ -22,8 +22,8 @@ a {
     transition: all 0.2s;
 }
 
-button, .btn {
-    font-family: 'Poppins', sans-serif;
+button, .btn, input, select, textarea {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* Landing Page (Index) Styles */

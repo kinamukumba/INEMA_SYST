@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEMA Base - Gestão de Atendimentos</title>
+    <meta name="description" content="Painel de controlo de atendimentos activos da Base Operacional INEMA">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+
+    <style>
+        /* ============================
+           ATENDIMENTOS PAGE STYLES
+           ============================ */
+        .page-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-header-row h3 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #232c5f;
+        }
+
+        .filter-tabs {
+            display: flex;
+            background: #f1f5f9;
+            border-radius: 0.75rem;
+            padding: 0.25rem;
+            gap: 0.25rem;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            border: none;
+            background: transparent;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-tab.active {
+            background: white;
+            color: #232c5f;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        /* Atendimento Card */
+        .atendimento-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .atendimento-card {
+            border-radius: 1rem;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid #f1f5f9;
+            transition: box-shadow 0.2s;
+        }
+
+        .atendimento-card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        .atendimento-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #f8fafc;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .atend-id-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .atend-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .atend-icon.status-despachado  { background: #fef3c7; color: #d97706; }
+        .atend-icon.status-a_caminho   { background: #dbeafe; color: #2563eb; }
+        .atend-icon.status-no_local    { background: #dcfce7; color: #16a34a; }
+        .atend-icon.status-concluido   { background: #f0f9ff; color: #0284c7; }
+
+        .atend-title h4 {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #232c5f;
+            margin-bottom: 0.2rem;
+        }
+
+        .atend-title span {
+            font-size: 0.75rem;
+            color: #8c909c;
+            font-weight: 600;
+        }
+
+        /* Estado Badge */
+        .estado-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .estado-despachado  { background: #fef3c7; color: #92400e; }
+        .estado-a_caminho   { background: #dbeafe; color: #1e40af; }
+        .estado-no_local    { background: #dcfce7; color: #166534; }
+        .estado-concluido   { background: #e0f2fe; color: #0c4a6e; }
+
+        .atendimento-card-body {
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        /* Info Grid */
+        .info-section h5 {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8c909c;
+            margin-bottom: 1rem;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .info-row i {
+            width: 20px;
+            color: #232c5f;
+            font-size: 0.875rem;
+        }
+
+        .info-row span {
+            color: #334155;
+            font-weight: 600;
+        }
+
+        /* Timeline */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .timeline-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .timeline-dot.done  { background: #10b981; }
+        .timeline-dot.empty { background: #e2e8f0; }
+        .timeline-dot.now   { background: #3b82f6; animation: pulseDot 1.5s infinite; }
+
+        @keyframes pulseDot {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.4); }
+            50%       { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
+        }
+
+        .timeline-label { font-weight: 700; color: #334155; }
+        .timeline-time  { color: #8c909c; margin-left: auto; }
+
+        .atendimento-card-footer {
+            padding: 1.25rem 2rem;
+            background: #f8fafc;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-manage {
+            padding: 0.6rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-manage.primary {
+            background: #232c5f;
+            color: white;
+        }
+
+        .btn-manage.primary:hover {
+            background: #1a214a;
+            transform: translateY(-1px);
+        }
+
+        .btn-manage.secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        /* ==============================
+           MODAL ATUALIZAR ATENDIMENTO
+           ============================== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 1.25rem;
+            width: 100%;
+            max-width: 620px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            animation: modalSlide 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
+
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 1.75rem 2rem 1.25rem;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #232c5f;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            color: #8c909c;
+            cursor: pointer;
+            font-size: 1.25rem;
+            padding: 0.25rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .modal-close-btn:hover { background: #f1f5f9; color: #232c5f; }
+
+        .modal-body {
+            padding: 1.75rem 2rem;
+        }
+
+        .modal-section-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8c909c;
+            margin-bottom: 1rem;
+        }
+
+        .status-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .status-option {
+            padding: 1rem;
+            border: 2px solid #f1f5f9;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            background: white;
+        }
+
+        .status-option:hover { border-color: #232c5f; }
+
+        .status-option.selected {
+            border-color: #232c5f;
+            background: #f0f2ff;
+        }
+
+        .status-option i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .status-option span {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #232c5f;
+        }
+
+        .form-field { margin-bottom: 1.25rem; }
+
+        .form-field label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #232c5f;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-field input,
+        .form-field textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+            resize: vertical;
+        }
+
+        .form-field input:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: #232c5f;
+            box-shadow: 0 0 0 3px rgba(35,44,95,0.08);
+        }
+
+        /* Recursos List */
+        .recursos-list {
+            background: #f8fafc;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .recurso-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.85rem;
+        }
+
+        .recurso-item:last-child { border-bottom: none; }
+        .recurso-item .nome { font-weight: 700; color: #232c5f; }
+        .recurso-item .qty  { font-weight: 800; color: #10b981; background: #dcfce7; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; }
+
+        .add-recurso-form {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 0.75rem;
+            align-items: end;
+        }
+
+        .add-recurso-form input {
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .add-recurso-form input[type="number"] {
+            width: 80px;
+        }
+
+        .btn-add-recurso {
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+
+        .modal-footer {
+            padding: 1.25rem 2rem;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-cancel-modal {
+            flex: 1;
+            padding: 0.9rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            background: white;
+            color: #64748b;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-save-modal {
+            flex: 2;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 0.75rem;
+            background: #232c5f;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-save-modal:hover { background: #1a214a; }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #8c909c;
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.25;
+            display: block;
+        }
+
+        .empty-state p { font-weight: 600; }
+
+        /* Feedback toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            animation: toastIn 0.3s ease;
+        }
+
+        .toast.show { display: flex; }
+        .toast.success { background: #10b981; color: white; }
+        .toast.error   { background: #ef4444; color: white; }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .atendimento-card-body { grid-template-columns: 1fr; }
+            .status-selector { grid-template-columns: 1fr 1fr; }
+            .add-recurso-form { grid-template-columns: 1fr 1fr; }
+            .add-recurso-form .btn-add-recurso { grid-column: 1 / -1; }
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar sidebar-base">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-hospital" style="color:#10b981;"></i>
+                <span id="baseNameSidebar">Base INEMA</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fa-solid fa-bell"></i> Despacho
+                </a>
+                <a href="atendimentos.html" class="nav-link active">
+                    <i class="fa-solid fa-clipboard-list"></i> Atendimentos
+                </a>
+                <a href="viaturas.html" class="nav-link">
+                    <i class="fa-solid fa-ambulance"></i> Frota
+                </a>
+                <a href="equipas.html" class="nav-link">
+                    <i class="fa-solid fa-user-nurse"></i> Equipas
+                </a>
+                <a href="#" class="nav-link logout" id="btnLogout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 style="font-size:1.1rem;font-weight:800;color:#10b981;">Gestão de Atendimentos</h2>
+                <div style="display:flex;align-items:center;gap:1rem;">
+                    <div style="text-align:right;">
+                        <p style="font-size:0.85rem;font-weight:800;color:#232c5f;" id="baseNameHeader">Base</p>
+                        <p style="font-size:0.7rem;font-weight:600;color:#8c909c;" id="baseTipoHeader">Polo INEMA</p>
+                    </div>
+                    <div style="width:45px;height:45px;border-radius:50%;background:#f0fdf4;display:flex;align-items:center;justify-content:center;color:#10b981;">
+                        <i class="fa-solid fa-building-shield"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <div class="page-header-row">
+                    <h3><i class="fa-solid fa-clipboard-list" style="color:#10b981;margin-right:0.5rem;"></i> Histórico de Atendimentos</h3>
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" id="tab-todos" onclick="setFilter('todos')">Todos</button>
+                        <button class="filter-tab" id="tab-ativos" onclick="setFilter('ativos')">Activos</button>
+                        <button class="filter-tab" id="tab-concluidos" onclick="setFilter('concluidos')">Concluídos</button>
+                    </div>
+                </div>
+
+                <div class="atendimento-list" id="atendimentoList">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <p>A carregar atendimentos...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Gerir Atendimento -->
+    <div class="modal-overlay" id="manageModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modalOccTitle">Atendimento #00</h3>
+                    <p style="font-size:0.8rem;color:#8c909c;margin-top:0.2rem;" id="modalOccCategory"></p>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Estado do Atendimento -->
+                <p class="modal-section-title">Estado do Atendimento</p>
+                <div class="status-selector">
+                    <div class="status-option" id="opt-despachado" onclick="selectStatus('despachado')">
+                        <i class="fa-solid fa-truck-fast" style="color:#d97706;"></i>
+                        <span>Despachado</span>
+                    </div>
+                    <div class="status-option" id="opt-a_caminho" onclick="selectStatus('a_caminho')">
+                        <i class="fa-solid fa-route" style="color:#2563eb;"></i>
+                        <span>A Caminho</span>
+                    </div>
+                    <div class="status-option" id="opt-no_local" onclick="selectStatus('no_local')">
+                        <i class="fa-solid fa-location-dot" style="color:#16a34a;"></i>
+                        <span>No Local</span>
+                    </div>
+                    <div class="status-option" id="opt-concluido" onclick="selectStatus('concluido')">
+                        <i class="fa-solid fa-circle-check" style="color:#0284c7;"></i>
+                        <span>Concluído</span>
+                    </div>
+                </div>
+
+                <!-- Relatório Final (só aparece quando concluído) -->
+                <div id="relatorioSection" style="display:none;">
+                    <p class="modal-section-title">Relatório Médico Final</p>
+                    <div class="form-field">
+                        <label>Descreva o atendimento realizado</label>
+                        <textarea id="relatorioFinal" rows="4" placeholder="Ex: Vítima com fractura no membro inferior esquerdo. Estabilizada e transportada para o Hospital..."></textarea>
+                    </div>
+                </div>
+
+                <hr style="border:none;border-top:1px solid #f1f5f9;margin:1.25rem 0;">
+
+                <!-- Recursos Utilizados -->
+                <p class="modal-section-title">Recursos Utilizados no Atendimento</p>
+
+                <div class="recursos-list" id="recursosList">
+                    <div style="padding:1rem;text-align:center;color:#8c909c;font-size:0.85rem;">Nenhum recurso registado.</div>
+                </div>
+
+                <div class="add-recurso-form">
+                    <div class="form-field" style="margin:0;">
+                        <input type="text" id="recursoNome" placeholder="Ex: Oxigénio, Compressa, Torniquete..." style="width:100%;">
+                    </div>
+                    <div class="form-field" style="margin:0;">
+                        <input type="number" id="recursoQtd" placeholder="Qtd." value="1" min="1" style="width:80px;">
+                    </div>
+                    <button class="btn-add-recurso" onclick="addRecurso()">
+                        <i class="fa-solid fa-plus"></i> Adicionar
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-cancel-modal" onclick="closeModal()">Cancelar</button>
+                <button class="btn-save-modal" id="btnSaveModal" onclick="saveAtendimento()">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar Alterações
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Feedback -->
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg"></span>
+    </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script>
+        let allAtendimentos = [];
+        let currentFilter = 'todos';
+        let currentAtendimentoId = null;
+        let currentSelectedStatus = null;
+
+        // =============== INIT ===============
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await loadUserData();
+            if (!user) return;
+
+            document.getElementById('baseNameSidebar').textContent = user.nome;
+            document.getElementById('baseNameHeader').textContent  = user.nome;
+            document.getElementById('baseTipoHeader').textContent  = user.tipo_base === 'hospitalar' ? 'Com Hospital' : 'Sem Hospital';
+
+            loadAtendimentos();
+
+            document.getElementById('btnLogout').addEventListener('click', async () => {
+                await ApiClient.get('auth.php?action=logout');
+                window.location.href = '../login.html';
+            });
+        });
+
+        // =============== FILTER ===============
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${filter}`).classList.add('active');
+            renderAtendimentos();
+        }
+
+        // =============== LOAD ===============
+        async function loadAtendimentos() {
+            const res = await ApiClient.get('base.php?action=get_active_atendimentos');
+            if (res.success) {
+                allAtendimentos = res.data;
+            } else {
+                allAtendimentos = [];
+            }
+            renderAtendimentos();
+        }
+
+        // =============== RENDER ===============
+        function renderAtendimentos() {
+            const container = document.getElementById('atendimentoList');
+
+            let list = allAtendimentos;
+            if (currentFilter === 'ativos') {
+                list = allAtendimentos.filter(a => a.estado !== 'concluido');
+            } else if (currentFilter === 'concluidos') {
+                list = allAtendimentos.filter(a => a.estado === 'concluido');
+            }
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        <p>Nenhum atendimento encontrado.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = list.map(a => buildCard(a)).join('');
+        }
+
+        function buildCard(a) {
+            const estadoLabels = {
+                despachado: 'Despachado',
+                a_caminho:  'A Caminho',
+                no_local:   'No Local',
+                concluido:  'Concluído'
+            };
+
+            const estadoIcons = {
+                despachado: 'fa-truck-fast',
+                a_caminho:  'fa-route',
+                no_local:   'fa-location-dot',
+                concluido:  'fa-circle-check'
+            };
+
+            const fmtTime = (ts) => ts ? new Date(ts).toLocaleTimeString('pt', {hour:'2-digit', minute:'2-digit'}) : '--:--';
+            const fmtDate = (ts) => ts ? new Date(ts).toLocaleDateString('pt', {day:'2-digit', month:'2-digit'}) : '';
+
+            // Timeline dots
+            const steps = ['despachado','a_caminho','no_local','concluido'];
+            const currentIdx = steps.indexOf(a.estado);
+
+            const timelineHtml = [
+                { label:'Despachado',  time: a.data_despacho  },
+                { label:'A Caminho',   time: null             },
+                { label:'No Local',    time: a.data_chegada   },
+                { label:'Concluído',   time: a.data_conclusao }
+            ].map((step, i) => {
+                let dotClass = i < currentIdx ? 'done' : (i === currentIdx ? 'now' : 'empty');
+                return `<div class="timeline-item">
+                    <div class="timeline-dot ${dotClass}"></div>
+                    <span class="timeline-label">${step.label}</span>
+                    <span class="timeline-time">${step.time ? fmtTime(step.time) : ''}</span>
+                </div>`;
+            }).join('');
+
+            const isConcluido = a.estado === 'concluido';
+
+            return `
+                <div class="atendimento-card" id="atend-${a.id}">
+                    <div class="atendimento-card-header">
+                        <div class="atend-id-badge">
+                            <div class="atend-icon status-${a.estado}">
+                                <i class="fa-solid ${estadoIcons[a.estado] || 'fa-clipboard'}"></i>
+                            </div>
+                            <div class="atend-title">
+                                <h4>${a.nome_categoria}</h4>
+                                <span>Ocorrência #${a.ocorrencia_id} · ${fmtDate(a.data_despacho)}</span>
+                            </div>
+                        </div>
+                        <span class="estado-badge estado-${a.estado}">${estadoLabels[a.estado] || a.estado}</span>
+                    </div>
+
+                    <div class="atendimento-card-body">
+                        <div class="info-section">
+                            <h5>Informações</h5>
+                            <div class="info-row"><i class="fa-solid fa-user"></i><span>${a.utente_nome}</span></div>
+                            <div class="info-row"><i class="fa-solid fa-phone"></i><span>${a.utente_tel || '—'}</span></div>
+                            <div class="info-row"><i class="fa-solid fa-location-dot"></i><span>${a.localizacao_texto}</span></div>
+                            <div class="info-row"><i class="fa-solid fa-ambulance"></i><span>${a.vtr_placa} — ${a.vtr_modelo}</span></div>
+                            <div class="info-row"><i class="fa-solid fa-user-nurse"></i><span>${a.nome_equipe}</span></div>
+                            ${a.relatorio_final ? `<div class="info-row" style="margin-top:.75rem;align-items:start;"><i class="fa-solid fa-file-medical"></i><span style="line-height:1.5;">${a.relatorio_final}</span></div>` : ''}
+                        </div>
+
+                        <div class="info-section">
+                            <h5>Linha do Tempo</h5>
+                            <div class="timeline">${timelineHtml}</div>
+                        </div>
+                    </div>
+
+                    <div class="atendimento-card-footer">
+                        <p style="font-size:0.8rem;color:#8c909c;font-weight:600;">
+                            <i class="fa-solid fa-people-group"></i> ${a.num_vitimas} vítima(s) · ${a.feridos_graves == 1 ? '<span style="color:#ef4444;">Feridos Graves</span>' : 'Sem feridos graves'}
+                        </p>
+                        ${!isConcluido ? `
+                            <button class="btn-manage primary" onclick="openManage(${a.id})">
+                                <i class="fa-solid fa-pen-to-square"></i> Gerir Atendimento
+                            </button>` : `
+                            <button class="btn-manage secondary" onclick="openManage(${a.id})">
+                                <i class="fa-solid fa-eye"></i> Ver Recursos
+                            </button>`}
+                    </div>
+                </div>`;
+        }
+
+        // =============== OPEN MODAL ===============
+        async function openManage(atendimentoId) {
+            const a = allAtendimentos.find(x => x.id == atendimentoId);
+            if (!a) return;
+
+            currentAtendimentoId = atendimentoId;
+            currentSelectedStatus = a.estado;
+
+            document.getElementById('modalOccTitle').textContent = `Ocorrência #${a.ocorrencia_id}`;
+            document.getElementById('modalOccCategory').textContent = a.nome_categoria + ' · ' + a.localizacao_texto;
+            document.getElementById('relatorioFinal').value = a.relatorio_final || '';
+
+            selectStatus(a.estado);
+            toggleRelatorioSection(a.estado);
+
+            // Carregar recursos
+            await loadRecursos(atendimentoId);
+
+            document.getElementById('manageModal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('manageModal').classList.remove('open');
+            currentAtendimentoId = null;
+        }
+
+        // =============== STATUS ===============
+        function selectStatus(status) {
+            currentSelectedStatus = status;
+            ['despachado','a_caminho','no_local','concluido'].forEach(s => {
+                document.getElementById(`opt-${s}`).classList.toggle('selected', s === status);
+            });
+            toggleRelatorioSection(status);
+        }
+
+        function toggleRelatorioSection(status) {
+            document.getElementById('relatorioSection').style.display = status === 'concluido' ? 'block' : 'none';
+        }
+
+        // =============== RECURSOS ===============
+        async function loadRecursos(atendimentoId) {
+            const res = await ApiClient.get(`base.php?action=get_atendimento_recursos&atendimento_id=${atendimentoId}`);
+            const list = document.getElementById('recursosList');
+
+            if (res.success && res.data.length > 0) {
+                list.innerHTML = res.data.map(r => `
+                    <div class="recurso-item">
+                        <span class="nome"><i class="fa-solid fa-box-archive" style="margin-right:0.5rem;color:#8c909c;"></i>${r.nome_recurso}</span>
+                        <span class="qty">${r.quantidade} un.</span>
+                    </div>`).join('');
+            } else {
+                list.innerHTML = '<div style="padding:1rem;text-align:center;color:#8c909c;font-size:0.85rem;">Nenhum recurso registado.</div>';
+            }
+        }
+
+        async function addRecurso() {
+            const nome = document.getElementById('recursoNome').value.trim();
+            const qty  = parseInt(document.getElementById('recursoQtd').value);
+
+            if (!nome || qty <= 0) {
+                showToast('Preencha o nome e a quantidade do recurso.', 'error');
+                return;
+            }
+
+            const res = await ApiClient.post('base.php?action=add_atendimento_recurso', {
+                atendimento_id: currentAtendimentoId,
+                nome_recurso: nome,
+                quantidade: qty
+            });
+
+            if (res.success) {
+                document.getElementById('recursoNome').value = '';
+                document.getElementById('recursoQtd').value = 1;
+                await loadRecursos(currentAtendimentoId);
+                showToast('Recurso adicionado!', 'success');
+            } else {
+                showToast(res.message, 'error');
+            }
+        }
+
+        // =============== SAVE ===============
+        async function saveAtendimento() {
+            if (!currentAtendimentoId || !currentSelectedStatus) return;
+
+            const btn = document.getElementById('btnSaveModal');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A guardar...';
+
+            const payload = {
+                atendimento_id: currentAtendimentoId,
+                estado: currentSelectedStatus,
+                relatorio_final: document.getElementById('relatorioFinal').value
+            };
+
+            const res = await ApiClient.post('base.php?action=update_atendimento_status', payload);
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Alterações';
+
+            if (res.success) {
+                showToast('Atendimento actualizado com sucesso!', 'success');
+                closeModal();
+                loadAtendimentos();
+            } else {
+                showToast(res.message, 'error');
+            }
+        }
+
+        // =============== TOAST ===============
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+    </script>
+</body>
+</html>

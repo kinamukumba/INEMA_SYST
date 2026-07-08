@@ -99,6 +99,7 @@ if ($action === 'register_base') {
     $municipio = $data['municipio'] ?? '';
     $endereco = $data['endereco'] ?? 'Não especificado';
     $capacidade = (int)($data['capacidade'] ?? 0);
+    $tipo_base = $data['tipo_base'] ?? 'operacional';
     $password = password_hash($data['password'] ?? '123456', PASSWORD_DEFAULT);
     
     if (empty($nome) || empty($email)) {
@@ -106,8 +107,8 @@ if ($action === 'register_base') {
     }
 
     try {
-        $stmt = $pdo->prepare("INSERT INTO bases (nome_base, email_institucional, municipio, endereco, capacidade, senha) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$nome, $email, $municipio, $endereco, $capacidade, $password]);
+        $stmt = $pdo->prepare("INSERT INTO bases (nome_base, email_institucional, municipio, endereco, capacidade, tipo_base, senha) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$nome, $email, $municipio, $endereco, $capacidade, $tipo_base, $password]);
         sendResponse(true, 'Base registada com sucesso!');
     } catch (PDOException $e) {
         if ($e->getCode() == 23000) {
@@ -125,10 +126,11 @@ if ($action === 'update_base') {
     $municipio = $data['municipio'] ?? '';
     $endereco = $data['endereco'] ?? '';
     $capacidade = (int)($data['capacidade'] ?? 0);
+    $tipo_base = $data['tipo_base'] ?? 'operacional';
 
     try {
-        $stmt = $pdo->prepare("UPDATE bases SET nome_base = ?, email_institucional = ?, municipio = ?, endereco = ?, capacidade = ? WHERE id = ?");
-        $stmt->execute([$nome, $email, $municipio, $endereco, $capacidade, $id]);
+        $stmt = $pdo->prepare("UPDATE bases SET nome_base = ?, email_institucional = ?, municipio = ?, endereco = ?, capacidade = ?, tipo_base = ? WHERE id = ?");
+        $stmt->execute([$nome, $email, $municipio, $endereco, $capacidade, $tipo_base, $id]);
         sendResponse(true, 'Base atualizada com sucesso!');
     } catch (PDOException $e) {
         sendResponse(false, 'Erro ao atualizar base: ' . $e->getMessage());
